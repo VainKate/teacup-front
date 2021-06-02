@@ -35,11 +35,9 @@ const LoginForm: React.FC = () => {
       password: data.password,
     });
 
-    console.log(loginResponse);
-
-    // if (loginResponse.data) {
-    //   login({ ...loginResponse.data });
-    // }
+    if (loginResponse.data) {
+      login({ ...loginResponse.data });
+    }
   });
 
   return (

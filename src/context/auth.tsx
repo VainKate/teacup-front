@@ -1,6 +1,13 @@
 import { createContext, useCallback, useMemo, useReducer } from 'react';
+import { Channel } from '../models/channel.model';
+import { Tag } from '../models/tag.model';
 
-export type AuthenticatedUser = { id: number; nickname: string };
+export type AuthenticatedUser = {
+  id: number;
+  nickname: string;
+  tags: Array<Tag>;
+  channels: Array<Channel>;
+};
 
 const AuthContext = createContext<{
   user: AuthenticatedUser | null;
