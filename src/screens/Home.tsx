@@ -9,11 +9,15 @@ const HomeScreen: React.FC = () => {
   const { user } = useContext(AuthContext);
 
   const [loadingChannels, setLoadingChannels] = useState(true);
+  const [loadingRecommendedChannels, setLoadingRecommendedChannels] =
+    useState(true);
   const [userChannels, setUserChannels] = useState<Array<Channel> | null>(null);
+  const [userRecommendedChannels, setUserRecommendedChannels] =
+    useState<Array<Channel> | null>(null);
 
   const getChannels = async () => {
     const channelsResponse = await axios.get(
-      'http://localhost:8000/v1/channels',
+      'http://localhost:8000/v1/me/channels',
       { withCredentials: true },
     );
 
@@ -23,8 +27,23 @@ const HomeScreen: React.FC = () => {
     }
   };
 
+  const getRecommendedChannels = async () => {
+    const channelsResponse = await axios.get(
+      'http://localhost:8000/v1/me/recommended',
+      {
+        withCredentials: true,
+      },
+    );
+
+    if (channelsResponse.data) {
+      setUserRecommendedChannels(channelsResponse.data);
+      setLoadingRecommendedChannels(false);
+    }
+  };
+
   useEffect(() => {
     getChannels();
+    getRecommendedChannels();
   }, []);
 
   return (
@@ -40,6 +59,15 @@ const HomeScreen: React.FC = () => {
         </>
       )}
       <h5>Recommandé pour toi</h5>
+      {loadingRecommendedChannels ? (
+        <CircularProgress />
+      ) : (
+        <>
+          {userRecommendedChannels?.map((channel) => (
+            <ChannelCard channel={channel} />
+          ))}
+        </>
+      )}
     </div>
   );
 };
