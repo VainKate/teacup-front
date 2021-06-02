@@ -12,6 +12,7 @@ import { AuthProvider } from './context/auth';
 import LandingScreen from './screens/Landing';
 import PrivateRoute from './routes/PrivateRoute';
 import HomeScreen from './screens/Home';
+import DiscoverScreen from './screens/Discover';
 
 function App() {
   return (
@@ -23,6 +24,9 @@ function App() {
             <Switch>
               <PrivateRoute path="/home">
                 <HomeScreen />
+              </PrivateRoute>
+              <PrivateRoute path="/discover">
+                <DiscoverScreen />
               </PrivateRoute>
               <Route path="/">
                 <LandingScreen />
