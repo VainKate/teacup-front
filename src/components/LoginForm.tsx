@@ -29,6 +29,7 @@ const LoginForm: React.FC = () => {
     useForm<{ email: string; password: string }>();
 
   const onSubmit = handleSubmit(async (data) => {
+    console.log('SUBMIT');
     const loginResponse = await axios.post('http://localhost:8000/v1/login', {
       email: data.email,
       password: data.password,
@@ -44,30 +45,35 @@ const LoginForm: React.FC = () => {
   return (
     <div>
       <DialogTitle>Login</DialogTitle>
-      <DialogContent>
-        <form onSubmit={onSubmit}>
+      <form onSubmit={onSubmit}>
+        <DialogContent>
           <TextField
             label="Mail address"
             margin="dense"
-            required
-            {...register('email')}
+            type="email"
+            {...register('email', { required: true })}
           />
           <TextField
             label="Password"
             margin="dense"
-            required
-            {...register('password')}
+            type="password"
+            {...register('password', { required: true })}
           />
-        </form>
-      </DialogContent>
-      <DialogActions>
-        <Button name="cancel" id="cancel" type="button">
-          Cancel
-        </Button>
-        <Button name="login" id="login" type="submit">
-          Login
-        </Button>
-      </DialogActions>
+        </DialogContent>
+        <DialogActions>
+          <Button name="cancel" id="cancel" type="button">
+            Cancel
+          </Button>
+          <Button
+            name="login"
+            id="login"
+            type="submit"
+            disabled={formState.isSubmitting}
+          >
+            Login
+          </Button>
+        </DialogActions>
+      </form>
     </div>
   );
 };
