@@ -13,6 +13,7 @@ import LandingScreen from './screens/Landing';
 import PrivateRoute from './routes/PrivateRoute';
 import HomeScreen from './screens/Home';
 import DiscoverScreen from './screens/Discover';
+import ChannelScreen from './screens/Channel';
 
 function App() {
   return (
@@ -22,6 +23,9 @@ function App() {
           <Router>
             <NavBar />
             <Switch>
+              <PrivateRoute path="/channel/:id">
+                <ChannelScreen />
+              </PrivateRoute>
               <PrivateRoute path="/home">
                 <HomeScreen />
               </PrivateRoute>
