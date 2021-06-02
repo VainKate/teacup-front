@@ -2,7 +2,7 @@ import { Typography } from '@material-ui/core';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import ChannelList from '../components/ChannelList';
-import { Channel } from '../models/channel.model';
+import { Channel } from '../types';
 
 const DiscoverScreen: React.FC = () => {
   const [loading, setLoading] = useState(true);

@@ -7,7 +7,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import { useHistory } from 'react-router';
-import { Channel } from '../models/channel.model';
+import { Channel } from '../types';
 
 const useStyles = makeStyles(() =>
   createStyles({

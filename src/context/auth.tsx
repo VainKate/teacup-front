@@ -6,7 +6,7 @@ import {
   useMemo,
   useReducer,
 } from 'react';
-import { AuthenticatedUser } from '../models/user.model';
+import { AuthenticatedUser } from '../types';
 
 const AuthContext = createContext<{
   user: AuthenticatedUser | null;

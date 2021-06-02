@@ -1,11 +1,11 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
-import { AuthContext } from '../context/auth';
-import { Channel } from '../models/channel.model';
+import { AuthContext } from '../../context/auth';
 import { io, Socket } from 'socket.io-client';
-import ChatInput from '../components/ChatInput';
+import ChatInput from './ChatInput';
 import { Box, createStyles, makeStyles } from '@material-ui/core';
-import { AuthenticatedUser } from '../models/user.model';
+import { Message, SocketAuthPacket } from '../../types';
+import MessageItem from './MessageItem';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -22,16 +22,6 @@ const useStyles = makeStyles(() =>
     },
   }),
 );
-
-type SocketAuthPacket = {
-  channel: Pick<Channel, 'id'>;
-  user: Pick<AuthenticatedUser, 'id' | 'nickname'>;
-};
-
-type Message = {
-  id?: string;
-  content: string;
-} & SocketAuthPacket;
 
 const ChannelScreen: React.FC = () => {
   const { user } = useContext(AuthContext);
@@ -91,7 +81,7 @@ const ChannelScreen: React.FC = () => {
     <div>
       <div className={classes.messageList}>
         {messages.map((message) => (
-          <p>{message.content}</p>
+          <MessageItem message={message} key={message.id} />
         ))}
       </div>
       <Box position="fixed" bottom="0" width="100%">
