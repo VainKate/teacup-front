@@ -1,4 +1,11 @@
-import { createContext, useCallback, useMemo, useReducer } from 'react';
+import axios from 'axios';
+import {
+  createContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+} from 'react';
 import { Channel } from '../models/channel.model';
 import { Tag } from '../models/tag.model';
 
@@ -32,6 +39,30 @@ const authReducer = (state: any, action: { type: string; payload: any }) => {
 
 const AuthProvider: React.FC = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, { user: null });
+
+  const getMe = async () => {
+    try {
+      const meResponse = await axios.get('http://localhost:8000/v1/me', {
+        withCredentials: true,
+      });
+
+      if (meResponse.data) {
+        dispatch({
+          type: 'LOGIN',
+          payload: meResponse.data,
+        });
+      }
+    } catch (error) {
+      dispatch({
+        type: 'LOGOUT',
+        payload: { user: null },
+      });
+    }
+  };
+
+  useEffect(() => {
+    getMe();
+  }, []);
 
   const login = useCallback((user: AuthenticatedUser) => {
     dispatch({

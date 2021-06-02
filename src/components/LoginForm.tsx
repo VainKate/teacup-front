@@ -19,10 +19,14 @@ const LoginForm: React.FC = () => {
 
   const onSubmit = handleSubmit(async (data) => {
     console.log('SUBMIT');
-    const loginResponse = await axios.post('http://localhost:8000/v1/login', {
-      email: data.email,
-      password: data.password,
-    });
+    const loginResponse = await axios.post(
+      'http://localhost:8000/v1/login',
+      {
+        email: data.email,
+        password: data.password,
+      },
+      { withCredentials: true },
+    );
 
     if (loginResponse.data) {
       login({ ...loginResponse.data });

@@ -1,4 +1,15 @@
+import { useContext } from 'react';
+import { useHistory } from 'react-router';
+import { AuthContext } from '../context/auth';
+
 const LandingScreen: React.FC = () => {
+  const { user } = useContext(AuthContext);
+  const history = useHistory();
+
+  if (user) {
+    history.replace('/home');
+  }
+
   return (
     <section>
       <div>
