@@ -16,6 +16,10 @@ const useStyles = makeStyles((theme: Theme) =>
       flexWrap: 'wrap',
       justifyContent: 'center',
     },
+    tag: {
+      paddingLeft: '5px',
+      paddingRight: '5px',
+    },
   }),
 );
 
@@ -28,7 +32,11 @@ const ChannelCard: React.FC<{ channel: Channel }> = ({ channel }) => {
         <Typography variant="h5">{channel.title}</Typography>
         <div className={classes.tagContainer}>
           {channel.tags?.map((tag) => (
-            <Typography variant="h6" color="textSecondary">
+            <Typography
+              variant="h6"
+              color="textSecondary"
+              className={classes.tag}
+            >
               {tag.name}
             </Typography>
           ))}
