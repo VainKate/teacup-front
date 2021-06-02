@@ -38,8 +38,8 @@ const NavBar: React.FC = () => {
   const handleAuthDialogClose = () => setAuthDialogOpen(false);
 
   return (
-    <div className={classes.root}>
-      <AppBar position="sticky">
+    <AppBar position="sticky">
+      <div className={classes.root}>
         <Toolbar>
           <IconButton edge="start" className={classes.menuButton}>
             <MenuIcon
@@ -66,8 +66,8 @@ const NavBar: React.FC = () => {
             </>
           )}
         </Toolbar>
-      </AppBar>
-    </div>
+      </div>
+    </AppBar>
   );
 };
 

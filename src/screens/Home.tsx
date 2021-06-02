@@ -54,7 +54,7 @@ const HomeScreen: React.FC = () => {
       ) : (
         <>
           {userChannels?.map((channel) => (
-            <ChannelCard channel={channel} />
+            <ChannelCard key={channel.id} channel={channel} />
           ))}
         </>
       )}
@@ -64,7 +64,7 @@ const HomeScreen: React.FC = () => {
       ) : (
         <>
           {userRecommendedChannels?.map((channel) => (
-            <ChannelCard channel={channel} />
+            <ChannelCard key={channel.id} channel={channel} />
           ))}
         </>
       )}
