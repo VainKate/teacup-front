@@ -1,11 +1,15 @@
-import React from 'react';
-import logo from './logo.svg';
 import './App.css';
-import { BrowserRouter as Router } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Redirect,
+  Route,
+  Switch,
+} from 'react-router-dom';
 import NavBar from './components/NavBar';
-import { makeStyles, ThemeProvider } from '@material-ui/core/styles';
+import { ThemeProvider } from '@material-ui/core/styles';
 import { theme } from './theme';
 import { AuthProvider } from './context/auth';
+import LandingScreen from './screens/Landing';
 
 function App() {
   return (
@@ -14,6 +18,12 @@ function App() {
         <div className="App">
           <Router>
             <NavBar />
+            <Switch>
+              <Route path="/">
+                <LandingScreen />
+              </Route>
+              <Redirect to="/" />
+            </Switch>
           </Router>
         </div>
       </ThemeProvider>
