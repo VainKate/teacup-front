@@ -28,6 +28,16 @@ const useStyles = makeStyles((theme: Theme) =>
     title: {
       flexGrow: 1,
     },
+    drawer: {
+      width: 240,
+      [theme.breakpoints.up('sm')]: {
+        width: 240,
+        flexShrink: 0,
+      },
+    },
+    drawerPaper: {
+      width: 240,
+    },
   }),
 );
 
@@ -73,6 +83,7 @@ const NavBar: React.FC = () => {
                 variant="temporary"
                 anchor={'left'}
                 onClose={toggleDrawer(false)}
+                classes={{ paper: classes.drawerPaper }}
               >
                 <DrawerContent />
               </Drawer>
