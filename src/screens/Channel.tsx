@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
 import { AuthContext } from '../context/auth';
 import { Channel } from '../models/channel.model';
@@ -38,12 +38,16 @@ const ChannelScreen: React.FC = () => {
   const { channelId } = useParams<{ channelId: string }>();
   const classes = useStyles();
 
-  const socket: Socket = io('localhost:8000', {
-    transports: ['websocket'],
-    reconnection: true,
-    reconnectionDelay: 500,
-    reconnectionAttempts: 10,
-  });
+  const socket: Socket = useMemo(
+    () =>
+      io('localhost:8000', {
+        transports: ['websocket'],
+        reconnection: true,
+        reconnectionDelay: 500,
+        reconnectionAttempts: 10,
+      }),
+    [],
+  );
 
   const [messages, setMessages] = useState<Array<Message>>([]);
 
@@ -68,8 +72,7 @@ const ChannelScreen: React.FC = () => {
     return () => {
       socket && socket.disconnect();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [channelId]);
+  }, [channelId, socket, user?.id, user?.nickname]);
 
   const sendMessage = (message: string) => {
     socket.emit('message', {
