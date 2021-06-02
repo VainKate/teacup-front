@@ -1,5 +1,5 @@
 import { Box, CircularProgress, Grid } from '@material-ui/core';
-import { Channel } from '../models/channel.model';
+import { Channel } from '../types';
 import ChannelCard from './ChannelCard';
 
 const ChannelList: React.FC<{

@@ -6,7 +6,8 @@ import {
   makeStyles,
   Typography,
 } from '@material-ui/core';
-import { Channel } from '../models/channel.model';
+import { useHistory } from 'react-router';
+import { Channel } from '../types';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -27,10 +28,15 @@ const useStyles = makeStyles(() =>
 
 const ChannelCard: React.FC<{ channel: Channel }> = ({ channel }) => {
   const classes = useStyles();
+  const history = useHistory();
+
+  const enterChannel = () => {
+    history.push(`/channel/${channel.id}`);
+  };
 
   return (
     <Grid item xs={12} sm={6} md={4} lg={3}>
-      <Card className={classes.card}>
+      <Card className={classes.card} onClick={enterChannel}>
         <CardContent>
           <Typography variant="h5">{channel.title}</Typography>
           <div className={classes.tagContainer}>
