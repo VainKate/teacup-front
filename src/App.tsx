@@ -23,7 +23,7 @@ function App() {
           <Router>
             <NavBar />
             <Switch>
-              <PrivateRoute path="/channel/:id">
+              <PrivateRoute path="/channel/:channelId">
                 <ChannelScreen />
               </PrivateRoute>
               <PrivateRoute path="/home">
