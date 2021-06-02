@@ -1,4 +1,4 @@
-import { Box, CircularProgress, Typography } from '@material-ui/core';
+import { Box, CircularProgress, Grid, Typography } from '@material-ui/core';
 import axios from 'axios';
 import { useContext, useEffect, useState } from 'react';
 import ChannelCard from '../components/ChannelCard';
@@ -49,28 +49,32 @@ const HomeScreen: React.FC = () => {
   return (
     <div>
       <Typography variant="h4">Tes Salons</Typography>
-      <Box paddingY="20px">
-        {loadingChannels ? (
-          <CircularProgress />
-        ) : (
-          <>
-            {userChannels?.map((channel) => (
-              <ChannelCard key={channel.id} channel={channel} />
-            ))}
-          </>
-        )}
+      <Box padding="20px">
+        <Grid container spacing={3}>
+          {loadingChannels ? (
+            <CircularProgress />
+          ) : (
+            <>
+              {userChannels?.map((channel) => (
+                <ChannelCard key={channel.id} channel={channel} />
+              ))}
+            </>
+          )}
+        </Grid>
       </Box>
       <Typography variant="h4">Recommandé pour toi</Typography>
-      <Box paddingY="20px">
-        {loadingRecommendedChannels ? (
-          <CircularProgress />
-        ) : (
-          <>
-            {userRecommendedChannels?.map((channel) => (
-              <ChannelCard key={channel.id} channel={channel} />
-            ))}
-          </>
-        )}
+      <Box padding="20px">
+        <Grid container spacing={3}>
+          {loadingRecommendedChannels ? (
+            <CircularProgress />
+          ) : (
+            <>
+              {userRecommendedChannels?.map((channel) => (
+                <ChannelCard key={channel.id} channel={channel} />
+              ))}
+            </>
+          )}
+        </Grid>
       </Box>
     </div>
   );

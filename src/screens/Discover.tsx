@@ -1,4 +1,4 @@
-import { Box, CircularProgress, Typography } from '@material-ui/core';
+import { Box, CircularProgress, Grid, Typography } from '@material-ui/core';
 import axios from 'axios';
 import { useContext, useEffect, useState } from 'react';
 import ChannelCard from '../components/ChannelCard';
@@ -30,16 +30,18 @@ const DiscoverScreen: React.FC = () => {
   return (
     <div>
       <Typography variant="h4">Découvrir</Typography>
-      <Box paddingY="20px">
-        {loading ? (
-          <CircularProgress />
-        ) : (
-          <>
-            {channels?.map((channel) => (
-              <ChannelCard key={channel.id} channel={channel} />
-            ))}
-          </>
-        )}
+      <Box padding="20px">
+        <Grid container spacing={3}>
+          {loading ? (
+            <CircularProgress />
+          ) : (
+            <>
+              {channels?.map((channel) => (
+                <ChannelCard key={channel.id} channel={channel} />
+              ))}
+            </>
+          )}
+        </Grid>
       </Box>
     </div>
   );
