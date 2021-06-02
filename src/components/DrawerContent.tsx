@@ -21,22 +21,18 @@ const DrawerContent: React.FC = () => {
   return (
     <div>
       <List>
-        <Link to="/home">
-          <ListItem button key={'home'}>
-            <ListItemIcon>
-              <HomeIcon />
-            </ListItemIcon>
-            <ListItemText primary={'Accueil'} />
-          </ListItem>
-        </Link>
-        <Link to="/discover">
-          <ListItem button key={'discover'}>
-            <ListItemIcon>
-              <ForumIcon />
-            </ListItemIcon>
-            <ListItemText primary={'Découvrir'} />
-          </ListItem>
-        </Link>
+        <ListItem button key={'home'} component={Link} to="/home">
+          <ListItemIcon>
+            <HomeIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Accueil'} />
+        </ListItem>
+        <ListItem button key={'discover'} component={Link} to="/discover">
+          <ListItemIcon>
+            <ForumIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Découvrir'} />
+        </ListItem>
       </List>
       <Divider />
       <List>
