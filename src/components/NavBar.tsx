@@ -10,8 +10,9 @@ import {
   Typography,
 } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
-import { useCallback, useState } from 'react';
+import { useCallback, useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { AuthContext } from '../context/auth';
 import LoginForm from './LoginForm';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -30,6 +31,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const NavBar: React.FC = () => {
   const classes = useStyles();
+  const { user } = useContext(AuthContext);
 
   const [isAuthDialogOpen, setAuthDialogOpen] = useState(false);
   const openAuthDialog = () => setAuthDialogOpen(true);
@@ -53,12 +55,16 @@ const NavBar: React.FC = () => {
           >
             <Typography variant="h1">TeaCup</Typography>
           </Link>
-          <Button color="inherit" onClick={openAuthDialog}>
-            Login
-          </Button>
-          <Dialog open={isAuthDialogOpen} onClose={handleAuthDialogClose}>
-            <LoginForm />
-          </Dialog>
+          {!user && (
+            <>
+              <Button color="inherit" onClick={openAuthDialog}>
+                Login
+              </Button>
+              <Dialog open={isAuthDialogOpen} onClose={handleAuthDialogClose}>
+                <LoginForm />
+              </Dialog>
+            </>
+          )}
         </Toolbar>
       </AppBar>
     </div>
