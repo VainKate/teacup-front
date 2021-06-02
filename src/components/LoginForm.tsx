@@ -11,6 +11,7 @@ import {
 import axios from 'axios';
 import { useContext } from 'react';
 import { useForm } from 'react-hook-form';
+import { useHistory } from 'react-router';
 import { AuthContext } from '../context/auth';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -24,6 +25,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const LoginForm: React.FC = () => {
   const classes = useStyles();
+  const history = useHistory();
   const { login } = useContext(AuthContext);
   const { register, handleSubmit, formState } =
     useForm<{ email: string; password: string }>();
@@ -37,6 +39,7 @@ const LoginForm: React.FC = () => {
 
     if (loginResponse.data) {
       login({ ...loginResponse.data });
+      history.replace('/home');
     }
   });
 
