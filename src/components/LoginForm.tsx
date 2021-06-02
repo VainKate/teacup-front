@@ -1,12 +1,9 @@
 import {
   Button,
-  createStyles,
   DialogActions,
   DialogContent,
   DialogTitle,
-  makeStyles,
   TextField,
-  Theme,
 } from '@material-ui/core';
 import axios from 'axios';
 import { useContext } from 'react';
@@ -14,17 +11,7 @@ import { useForm } from 'react-hook-form';
 import { useHistory } from 'react-router';
 import { AuthContext } from '../context/auth';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      paddingLeft: '10px',
-      paddingRight: '10px',
-    },
-  }),
-);
-
 const LoginForm: React.FC = () => {
-  const classes = useStyles();
   const history = useHistory();
   const { login } = useContext(AuthContext);
   const { register, handleSubmit, formState } =
