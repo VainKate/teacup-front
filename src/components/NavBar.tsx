@@ -50,7 +50,6 @@ const NavBar: React.FC = () => {
   const handleAuthDialogClose = () => setAuthDialogOpen(false);
 
   const [isDrawerOpen, setDrawerOpen] = useState(false);
-  const openDrawer = () => setDrawerOpen(true);
   const toggleDrawer =
     (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
       if (

@@ -4,13 +4,11 @@ import {
   createStyles,
   Grid,
   makeStyles,
-  Theme,
   Typography,
 } from '@material-ui/core';
 import { Channel } from '../models/channel.model';
-import { theme } from '../theme';
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     tagContainer: {
       display: 'flex',

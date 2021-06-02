@@ -1,13 +1,10 @@
-import { Box, CircularProgress, Grid, Typography } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 import axios from 'axios';
-import { useContext, useEffect, useState } from 'react';
-import ChannelCard from '../components/ChannelCard';
-import { AuthContext } from '../context/auth';
+import { useEffect, useState } from 'react';
+import ChannelList from '../components/ChannelList';
 import { Channel } from '../models/channel.model';
 
 const HomeScreen: React.FC = () => {
-  const { user } = useContext(AuthContext);
-
   const [loadingChannels, setLoadingChannels] = useState(true);
   const [loadingRecommendedChannels, setLoadingRecommendedChannels] =
     useState(true);
@@ -49,33 +46,12 @@ const HomeScreen: React.FC = () => {
   return (
     <div>
       <Typography variant="h4">Tes Salons</Typography>
-      <Box padding="20px">
-        <Grid container spacing={3}>
-          {loadingChannels ? (
-            <CircularProgress />
-          ) : (
-            <>
-              {userChannels?.map((channel) => (
-                <ChannelCard key={channel.id} channel={channel} />
-              ))}
-            </>
-          )}
-        </Grid>
-      </Box>
+      <ChannelList loading={loadingChannels} channels={userChannels} />
       <Typography variant="h4">Recommandé pour toi</Typography>
-      <Box padding="20px">
-        <Grid container spacing={3}>
-          {loadingRecommendedChannels ? (
-            <CircularProgress />
-          ) : (
-            <>
-              {userRecommendedChannels?.map((channel) => (
-                <ChannelCard key={channel.id} channel={channel} />
-              ))}
-            </>
-          )}
-        </Grid>
-      </Box>
+      <ChannelList
+        loading={loadingRecommendedChannels}
+        channels={userRecommendedChannels}
+      />
     </div>
   );
 };

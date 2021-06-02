@@ -13,7 +13,7 @@ import { useContext } from 'react';
 import { AuthContext } from '../context/auth';
 
 const DrawerContent: React.FC = () => {
-  const { user, logout } = useContext(AuthContext);
+  const { logout } = useContext(AuthContext);
 
   const onLogout = () => {
     logout();
