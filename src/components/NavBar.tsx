@@ -3,6 +3,7 @@ import {
   Button,
   createStyles,
   Dialog,
+  Drawer,
   IconButton,
   makeStyles,
   Theme,
@@ -10,9 +11,10 @@ import {
   Typography,
 } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
-import { useContext, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../context/auth';
+import DrawerContent from './DrawerContent';
 import LoginForm from './LoginForm';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -26,6 +28,16 @@ const useStyles = makeStyles((theme: Theme) =>
     title: {
       flexGrow: 1,
     },
+    drawer: {
+      width: 240,
+      [theme.breakpoints.up('sm')]: {
+        width: 240,
+        flexShrink: 0,
+      },
+    },
+    drawerPaper: {
+      width: 240,
+    },
   }),
 );
 
@@ -37,17 +49,46 @@ const NavBar: React.FC = () => {
   const openAuthDialog = () => setAuthDialogOpen(true);
   const handleAuthDialogClose = () => setAuthDialogOpen(false);
 
+  const [isDrawerOpen, setDrawerOpen] = useState(false);
+  const openDrawer = () => setDrawerOpen(true);
+  const toggleDrawer =
+    (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
+      if (
+        event.type === 'keydown' &&
+        ((event as React.KeyboardEvent).key === 'Tab' ||
+          (event as React.KeyboardEvent).key === 'Shift')
+      ) {
+        return;
+      }
+
+      setDrawerOpen(open);
+    };
+
   return (
     <AppBar position="sticky">
       <div className={classes.root}>
         <Toolbar>
-          <IconButton edge="start" className={classes.menuButton}>
-            <MenuIcon
-              onClick={() => {
-                alert('clicked');
-              }}
-            />
-          </IconButton>
+          {user && (
+            <>
+              <IconButton
+                edge="start"
+                className={classes.menuButton}
+                onClick={toggleDrawer(true)}
+                onKeyDown={toggleDrawer(false)}
+              >
+                <MenuIcon />
+              </IconButton>
+              <Drawer
+                open={isDrawerOpen}
+                variant="temporary"
+                anchor={'left'}
+                onClose={toggleDrawer(false)}
+                classes={{ paper: classes.drawerPaper }}
+              >
+                <DrawerContent />
+              </Drawer>
+            </>
+          )}
           <Link
             to="/"
             style={{ textDecoration: 'none' }}
