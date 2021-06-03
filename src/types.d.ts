@@ -15,6 +15,10 @@ export type AuthenticatedUser = {
   channels: Array<Channel>;
 };
 
+export type ChannelUser = {
+  isLogged: boolean;
+} & Pick<AuthenticatedUser, 'id' | 'nickname'>;
+
 export type Tag = {
   id: number;
   name: string;
@@ -27,6 +31,7 @@ export type Channel = {
   title: string;
   usersCount?: string;
   tags?: Array<Tag>;
+  users?: Array<ChannelUser>;
   created_at?: string;
   updated_at?: string;
 };
