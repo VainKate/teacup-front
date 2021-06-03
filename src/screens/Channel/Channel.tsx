@@ -45,6 +45,7 @@ const useStyles = makeStyles((theme: Theme) =>
       },
     },
     drawerPaper: {
+      paddingTop: '60px',
       width: drawerWidth,
     },
     content: {
