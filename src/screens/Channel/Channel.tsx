@@ -10,10 +10,14 @@ import MessageItem from './MessageItem';
 const useStyles = makeStyles(() =>
   createStyles({
     root: {
-      flexGrow: 1,
+      display: 'flex',
+      flexDirection: 'column',
     },
     messageList: {
-      height: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      overflow: 'auto',
+      maxHeight: 'calc(100vh - 117px)',
     },
     input: {
       position: 'fixed',
@@ -78,10 +82,14 @@ const ChannelScreen: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className={classes.root}>
       <div className={classes.messageList}>
         {messages.map((message) => (
-          <MessageItem message={message} key={message.id} />
+          <MessageItem
+            message={message}
+            key={message.id}
+            isForeign={message.user.id !== user?.id}
+          />
         ))}
       </div>
       <Box position="fixed" bottom="0" width="100%">
