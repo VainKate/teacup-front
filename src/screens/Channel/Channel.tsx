@@ -16,7 +16,6 @@ import {
 import GroupIcon from '@material-ui/icons/Group';
 import { Channel, Message, SocketAuthPacket } from '../../types';
 import MessageItem from './MessageItem';
-import UserList from './UserList';
 import axios from 'axios';
 import ChannelDrawer from './ChannelDrawer';
 

@@ -1,6 +1,7 @@
 import { Box, createStyles, makeStyles, Typography } from '@material-ui/core';
+import { useEffect, useState } from 'react';
 import { Channel } from '../../types';
-import UserList from './UserList';
+import UserItem from './UserItem';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -15,6 +16,16 @@ const useStyles = makeStyles(() =>
 const ChannelDrawer: React.FC<{ channel: Channel }> = ({ channel }) => {
   const classes = useStyles();
 
+  const [onlineUsers, setOnlineUsers] = useState<Channel['users']>([]);
+  const [offlineUsers, setOfflineUsers] = useState<Channel['users']>([]);
+
+  useEffect(() => {
+    if (channel.users && channel.users.length > 0) {
+      setOnlineUsers(channel.users?.filter((user) => user.isLogged));
+      setOfflineUsers(channel.users?.filter((user) => !user.isLogged));
+    }
+  }, [channel.users]);
+
   return (
     <Box>
       <Box className={classes.title}>
@@ -24,7 +35,22 @@ const ChannelDrawer: React.FC<{ channel: Channel }> = ({ channel }) => {
         </Typography>
       </Box>
       <Box paddingX="10px">
-        <UserList users={channel.users} />
+        {onlineUsers && (
+          <>
+            <Typography>En ligne - {onlineUsers.length}</Typography>
+            {onlineUsers.map((user) => (
+              <UserItem user={user} />
+            ))}
+          </>
+        )}
+        {offlineUsers && (
+          <>
+            <Typography>Hors ligne - {offlineUsers.length}</Typography>
+            {offlineUsers!.map((user) => (
+              <UserItem user={user} />
+            ))}
+          </>
+        )}
       </Box>
     </Box>
   );
