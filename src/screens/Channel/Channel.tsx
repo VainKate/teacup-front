@@ -45,7 +45,9 @@ const useStyles = makeStyles((theme: Theme) =>
       },
     },
     drawerPaper: {
-      paddingTop: '60px',
+      [theme.breakpoints.up('sm')]: {
+        paddingTop: '60px',
+      },
       width: drawerWidth,
     },
     content: {
