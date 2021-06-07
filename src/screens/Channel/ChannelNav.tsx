@@ -2,17 +2,23 @@ import {
   AppBar,
   createStyles,
   Drawer,
+  Hidden,
   IconButton,
   makeStyles,
+  SwipeableDrawer,
   Theme,
   Toolbar,
   Typography,
 } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import React, { useContext, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { AuthContext } from '../context/auth';
-import DrawerContent from './DrawerContent';
+import { Channel } from '../../types';
+import ChannelDrawer from './ChannelDrawer';
+import GroupIcon from '@material-ui/icons/Group';
+import { AuthContext } from '../../context/auth';
+import DrawerContent from '../../components/DrawerContent';
+
+const drawerWidth = 240;
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -29,22 +35,22 @@ const useStyles = makeStyles((theme: Theme) =>
       flexGrow: 1,
     },
     drawer: {
-      width: 240,
+      width: drawerWidth,
       [theme.breakpoints.up('sm')]: {
-        width: 240,
         flexShrink: 0,
       },
     },
     drawerPaper: {
-      width: 240,
+      width: drawerWidth,
     },
   }),
 );
 
-const NavBar: React.FC = () => {
+const ChannelNav: React.FC<{ channel: Channel }> = ({ channel }) => {
   const classes = useStyles();
   const { user } = useContext(AuthContext);
-
+  const [isMobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+  const handleDrawerTogle = () => setMobileDrawerOpen(!isMobileDrawerOpen);
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   const toggleDrawer =
     (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
@@ -58,7 +64,6 @@ const NavBar: React.FC = () => {
 
       setDrawerOpen(open);
     };
-
   return (
     <AppBar position="sticky" className={classes.appBar}>
       <div className={classes.root}>
@@ -84,17 +89,31 @@ const NavBar: React.FC = () => {
               </Drawer>
             </>
           )}
-          <Link
-            to="/"
-            style={{ textDecoration: 'none' }}
-            className={classes.title}
-          >
-            <Typography variant="h1">TeaCup</Typography>
-          </Link>
+          <Typography># {channel.title}</Typography>
+          <Hidden smUp>
+            <IconButton color="inherit" edge="end" onClick={handleDrawerTogle}>
+              <GroupIcon />
+            </IconButton>
+          </Hidden>
         </Toolbar>
+        <nav className={classes.drawer}>
+          <Hidden smUp implementation="css">
+            <SwipeableDrawer
+              variant="temporary"
+              anchor="right"
+              open={isMobileDrawerOpen}
+              onOpen={handleDrawerTogle}
+              onClose={handleDrawerTogle}
+              ModalProps={{ keepMounted: true }}
+              classes={{ paper: classes.drawerPaper }}
+            >
+              {channel && <ChannelDrawer channel={channel} />}
+            </SwipeableDrawer>
+          </Hidden>
+        </nav>
       </div>
     </AppBar>
   );
 };
 
-export default NavBar;
+export default ChannelNav;

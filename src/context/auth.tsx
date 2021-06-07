@@ -23,7 +23,7 @@ const authReducer = (state: any, action: { type: string; payload: any }) => {
     case 'LOGIN':
       return { ...state, user: action.payload };
     case 'LOGOUT':
-      return { ...state, user: null };
+      return { ...state, user: null, joinedChannels: [] };
     default:
       return state;
   }
@@ -39,9 +39,16 @@ const AuthProvider: React.FC = ({ children }) => {
       });
 
       if (meResponse.data) {
+        const userChannels = await axios.get(
+          'http://localhost:8000/v1/me/channels',
+          {
+            withCredentials: true,
+          },
+        );
+
         dispatch({
           type: 'LOGIN',
-          payload: meResponse.data,
+          payload: { ...meResponse.data, channels: userChannels.data },
         });
       }
     } catch (error) {

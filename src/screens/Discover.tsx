@@ -2,6 +2,7 @@ import { Typography } from '@material-ui/core';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import ChannelList from '../components/ChannelList';
+import NavBar from '../components/NavBar';
 import { Channel } from '../types';
 
 const DiscoverScreen: React.FC = () => {
@@ -26,6 +27,7 @@ const DiscoverScreen: React.FC = () => {
 
   return (
     <div>
+      <NavBar />
       <Typography variant="h4">Découvrir</Typography>
       <ChannelList loading={loading} channels={channels} />
     </div>

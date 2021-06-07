@@ -39,7 +39,7 @@ const ChannelDrawer: React.FC<{ channel: Channel }> = ({ channel }) => {
           <>
             <Typography>En ligne - {onlineUsers.length}</Typography>
             {onlineUsers.map((user) => (
-              <UserItem user={user} />
+              <UserItem key={user.id} user={user} />
             ))}
           </>
         )}
@@ -47,7 +47,7 @@ const ChannelDrawer: React.FC<{ channel: Channel }> = ({ channel }) => {
           <>
             <Typography>Hors ligne - {offlineUsers.length}</Typography>
             {offlineUsers!.map((user) => (
-              <UserItem user={user} />
+              <UserItem key={user.id} user={user} />
             ))}
           </>
         )}

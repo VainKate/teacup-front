@@ -8,15 +8,13 @@ import {
   createStyles,
   Drawer,
   Hidden,
-  IconButton,
   makeStyles,
-  SwipeableDrawer,
   Theme,
 } from '@material-ui/core';
-import GroupIcon from '@material-ui/icons/Group';
 import { Channel, Message, SocketAuthPacket } from '../../types';
 import MessageItem from './MessageItem';
 import axios from 'axios';
+import ChannelNav from './ChannelNav';
 import ChannelDrawer from './ChannelDrawer';
 
 const drawerWidth = 240;
@@ -25,6 +23,9 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       display: 'flex',
+      [theme.breakpoints.up('sm')]: {
+        width: `calc(100vw - ${drawerWidth}px)`,
+      },
     },
     messageList: {
       display: 'flex',
@@ -36,21 +37,18 @@ const useStyles = makeStyles((theme: Theme) =>
       position: 'fixed',
       bottom: 0,
       width: '100%',
-    },
-    drawer: {
       [theme.breakpoints.up('sm')]: {
-        width: drawerWidth,
-        flexShrink: 0,
+        width: `calc(100vw - ${drawerWidth + 1}px)`,
       },
+    },
+    content: {
+      flexGrow: 1,
     },
     drawerPaper: {
       [theme.breakpoints.up('sm')]: {
         paddingTop: '60px',
       },
       width: drawerWidth,
-    },
-    content: {
-      flexGrow: 1,
     },
   }),
 );
@@ -60,10 +58,8 @@ const ChannelScreen: React.FC = () => {
   const { user } = useContext(AuthContext);
   const { channelId } = useParams<{ channelId: string }>();
 
-  const [isMobileDrawerOpen, setMobileDrawerOpen] = useState(false);
-  const handleDrawerTogle = () => setMobileDrawerOpen(!isMobileDrawerOpen);
-
   const [channel, setChannel] = useState<Channel | null>(null);
+  const [isConnected, setConnected] = useState(false);
 
   const getChannel = useCallback(async () => {
     let channelResponse = await axios.get<Channel>(
@@ -101,7 +97,7 @@ const ChannelScreen: React.FC = () => {
       })
       .on('confirm', () => {
         getChannel();
-        console.log('Connected');
+        setConnected(true);
       })
       .on('user:join', ({ channel, user }: SocketAuthPacket) => {
         console.log('an user has joined the room: ', { channel, user });
@@ -128,61 +124,43 @@ const ChannelScreen: React.FC = () => {
     } as Message);
   };
 
-  return (
-    <div className={classes.root}>
-      <main className={classes.content}>
-        <div className={classes.messageList}>
-          {messages.map((message) => (
-            <MessageItem
-              message={message}
-              key={message.id}
-              isForeign={message.user.id !== user?.id}
-            />
-          ))}
+  if (isConnected && channel) {
+    return (
+      <>
+        <ChannelNav channel={channel} />
+        <div className={classes.root}>
+          <main className={classes.content}>
+            <div className={classes.messageList}>
+              {messages.map((message) => (
+                <MessageItem
+                  message={message}
+                  key={message.id}
+                  isForeign={message.user.id !== user?.id}
+                />
+              ))}
+            </div>
+            <Box className={classes.input}>
+              <ChatInput sendMessage={sendMessage} />
+            </Box>
+          </main>
+          <nav>
+            <Hidden xsDown implementation="css">
+              <Drawer
+                variant="persistent"
+                anchor="right"
+                open
+                classes={{ paper: classes.drawerPaper }}
+              >
+                <ChannelDrawer channel={channel} />
+              </Drawer>
+            </Hidden>
+          </nav>
         </div>
-        <Box
-          position="fixed"
-          bottom="0"
-          width="100%"
-          display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-        >
-          <ChatInput sendMessage={sendMessage} />
-          <Hidden smUp>
-            <IconButton color="inherit" edge="end" onClick={handleDrawerTogle}>
-              <GroupIcon />
-            </IconButton>
-          </Hidden>
-        </Box>
-      </main>
-      <nav className={classes.drawer}>
-        <Hidden smUp implementation="css">
-          <SwipeableDrawer
-            variant="temporary"
-            anchor="right"
-            open={isMobileDrawerOpen}
-            onOpen={handleDrawerTogle}
-            onClose={handleDrawerTogle}
-            ModalProps={{ keepMounted: true }}
-            classes={{ paper: classes.drawerPaper }}
-          >
-            {channel && <ChannelDrawer channel={channel} />}
-          </SwipeableDrawer>
-        </Hidden>
-        <Hidden xsDown implementation="css">
-          <Drawer
-            variant="persistent"
-            anchor="right"
-            open
-            classes={{ paper: classes.drawerPaper }}
-          >
-            {channel && <ChannelDrawer channel={channel} />}
-          </Drawer>
-        </Hidden>
-      </nav>
-    </div>
-  );
+      </>
+    );
+  }
+
+  return null;
 };
 
 export default ChannelScreen;

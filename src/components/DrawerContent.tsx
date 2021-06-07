@@ -1,9 +1,11 @@
 import {
+  Avatar,
   Divider,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
+  Typography,
 } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 import HomeIcon from '@material-ui/icons/Home';
@@ -13,11 +15,12 @@ import { useContext } from 'react';
 import { AuthContext } from '../context/auth';
 
 const DrawerContent: React.FC = () => {
-  const { logout } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
 
   const onLogout = () => {
     logout();
   };
+
   return (
     <div>
       <List>
@@ -35,12 +38,28 @@ const DrawerContent: React.FC = () => {
         </ListItem>
       </List>
       <Divider />
+      {user && user.channels && (
+        <List>
+          {user.channels.map((channel) => (
+            <ListItem
+              button
+              key={channel.id}
+              component={Link}
+              to={`/channel/${channel.id}`}
+            >
+              <Avatar>{channel.title.slice(0, 1)}</Avatar>
+              <Typography component="p">{channel.title}</Typography>
+            </ListItem>
+          ))}
+        </List>
+      )}
+      <Divider />
       <List>
         <ListItem button key={'logout'} onClick={onLogout}>
           <ListItemIcon>
             <PowerSettingsNewIcon />
           </ListItemIcon>
-          <ListItemText primary={'Log out'}></ListItemText>
+          <ListItemText primary={'Se déconnecter'}></ListItemText>
         </ListItem>
       </List>
     </div>

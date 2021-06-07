@@ -1,28 +1,18 @@
 import { Typography } from '@material-ui/core';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import ChannelList from '../components/ChannelList';
+import NavBar from '../components/NavBar';
+import { AuthContext } from '../context/auth';
 import { Channel } from '../types';
 
 const HomeScreen: React.FC = () => {
-  const [loadingChannels, setLoadingChannels] = useState(true);
   const [loadingRecommendedChannels, setLoadingRecommendedChannels] =
     useState(true);
-  const [userChannels, setUserChannels] = useState<Array<Channel> | null>(null);
   const [userRecommendedChannels, setUserRecommendedChannels] =
     useState<Array<Channel> | null>(null);
 
-  const getChannels = async () => {
-    const channelsResponse = await axios.get(
-      'http://localhost:8000/v1/me/channels',
-      { withCredentials: true },
-    );
-
-    if (channelsResponse.data) {
-      setUserChannels(channelsResponse.data);
-      setLoadingChannels(false);
-    }
-  };
+  const { user } = useContext(AuthContext);
 
   const getRecommendedChannels = async () => {
     const channelsResponse = await axios.get(
@@ -39,14 +29,17 @@ const HomeScreen: React.FC = () => {
   };
 
   useEffect(() => {
-    getChannels();
     getRecommendedChannels();
   }, []);
 
   return (
     <div>
+      <NavBar />
       <Typography variant="h4">Tes Salons</Typography>
-      <ChannelList loading={loadingChannels} channels={userChannels} />
+      {user && user.channels && (
+        <ChannelList loading={!user} channels={user.channels} />
+      )}
+
       <Typography variant="h4">Recommandé pour toi</Typography>
       <ChannelList
         loading={loadingRecommendedChannels}
