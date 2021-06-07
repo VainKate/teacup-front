@@ -23,6 +23,7 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       display: 'flex',
+      width: '100vw',
       [theme.breakpoints.up('sm')]: {
         marginLeft: `${drawerWidth}px`,
         width: `calc(100vw - ${drawerWidth}px)`,
@@ -33,6 +34,7 @@ const useStyles = makeStyles((theme: Theme) =>
       flexDirection: 'column',
       overflow: 'auto',
       maxHeight: 'calc(100vh - 117px)',
+      width: '100vw',
       [theme.breakpoints.up('sm')]: {
         width: `calc(100vw - ${2 * drawerWidth}px)`,
       },

@@ -69,7 +69,7 @@ const ChannelNav: React.FC<{ channel: Channel }> = ({ channel }) => {
       <div className={classes.root}>
         <Toolbar>
           {user && (
-            <>
+            <Hidden smUp>
               <IconButton
                 edge="start"
                 className={classes.menuButton}
@@ -87,7 +87,7 @@ const ChannelNav: React.FC<{ channel: Channel }> = ({ channel }) => {
               >
                 <DrawerContent />
               </Drawer>
-            </>
+            </Hidden>
           )}
           <Typography># {channel.title}</Typography>
           <Hidden smUp>
