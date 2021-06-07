@@ -1,28 +1,35 @@
-import { Typography } from '@material-ui/core';
+import {
+  Box,
+  createStyles,
+  makeStyles,
+  Theme,
+  Typography,
+} from '@material-ui/core';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import ChannelList from '../components/ChannelList';
+import NavBar from '../components/NavBar';
+import { AuthContext } from '../context/auth';
 import { Channel } from '../types';
 
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      [theme.breakpoints.up('sm')]: {
+        marginLeft: `240px`,
+      },
+    },
+  }),
+);
+
 const HomeScreen: React.FC = () => {
-  const [loadingChannels, setLoadingChannels] = useState(true);
+  const classes = useStyles();
   const [loadingRecommendedChannels, setLoadingRecommendedChannels] =
     useState(true);
-  const [userChannels, setUserChannels] = useState<Array<Channel> | null>(null);
   const [userRecommendedChannels, setUserRecommendedChannels] =
     useState<Array<Channel> | null>(null);
 
-  const getChannels = async () => {
-    const channelsResponse = await axios.get(
-      'http://localhost:8000/v1/me/channels',
-      { withCredentials: true },
-    );
-
-    if (channelsResponse.data) {
-      setUserChannels(channelsResponse.data);
-      setLoadingChannels(false);
-    }
-  };
+  const { user } = useContext(AuthContext);
 
   const getRecommendedChannels = async () => {
     const channelsResponse = await axios.get(
@@ -39,19 +46,24 @@ const HomeScreen: React.FC = () => {
   };
 
   useEffect(() => {
-    getChannels();
     getRecommendedChannels();
   }, []);
 
   return (
     <div>
-      <Typography variant="h4">Tes Salons</Typography>
-      <ChannelList loading={loadingChannels} channels={userChannels} />
-      <Typography variant="h4">Recommandé pour toi</Typography>
-      <ChannelList
-        loading={loadingRecommendedChannels}
-        channels={userRecommendedChannels}
-      />
+      <NavBar />
+      <Box className={classes.root}>
+        <Typography variant="h4">Tes Salons</Typography>
+        {user && user.channels && (
+          <ChannelList loading={!user} channels={user.channels} />
+        )}
+
+        <Typography variant="h4">Recommandé pour toi</Typography>
+        <ChannelList
+          loading={loadingRecommendedChannels}
+          channels={userRecommendedChannels}
+        />
+      </Box>
     </div>
   );
 };

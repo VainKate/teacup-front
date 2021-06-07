@@ -10,6 +10,7 @@ import { useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import { useHistory } from 'react-router';
 import { AuthContext } from '../context/auth';
+import { AuthenticatedUser, Channel } from '../types';
 
 const LoginForm: React.FC = () => {
   const history = useHistory();
@@ -18,7 +19,7 @@ const LoginForm: React.FC = () => {
     useForm<{ email: string; password: string }>();
 
   const onSubmit = handleSubmit(async (data) => {
-    const loginResponse = await axios.post(
+    const loginResponse = await axios.post<AuthenticatedUser>(
       'http://localhost:8000/v1/login',
       {
         email: data.email,
@@ -28,7 +29,14 @@ const LoginForm: React.FC = () => {
     );
 
     if (loginResponse.data) {
-      login({ ...loginResponse.data });
+      const userChannels = await axios.get<Array<Channel>>(
+        'http://localhost:8000/v1/me/channels',
+        { withCredentials: true },
+      );
+      login({
+        ...loginResponse.data,
+        channels: userChannels.data,
+      });
       history.replace('/home');
     }
   });

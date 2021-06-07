@@ -1,10 +1,29 @@
-import { Typography } from '@material-ui/core';
+import {
+  Box,
+  createStyles,
+  makeStyles,
+  Theme,
+  Typography,
+} from '@material-ui/core';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import ChannelList from '../components/ChannelList';
+import NavBar from '../components/NavBar';
 import { Channel } from '../types';
 
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      [theme.breakpoints.up('sm')]: {
+        marginLeft: `240px`,
+      },
+    },
+  }),
+);
+
 const DiscoverScreen: React.FC = () => {
+  const classes = useStyles();
+
   const [loading, setLoading] = useState(true);
   const [channels, setChannels] = useState<Array<Channel> | null>(null);
 
@@ -26,8 +45,11 @@ const DiscoverScreen: React.FC = () => {
 
   return (
     <div>
-      <Typography variant="h4">Découvrir</Typography>
-      <ChannelList loading={loading} channels={channels} />
+      <NavBar />
+      <Box className={classes.root}>
+        <Typography variant="h4">Découvrir</Typography>
+        <ChannelList loading={loading} channels={channels} />
+      </Box>
     </div>
   );
 };

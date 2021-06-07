@@ -3,7 +3,7 @@ import { createMuiTheme } from '@material-ui/core/styles';
 export const theme = createMuiTheme({
   palette: {
     primary: {
-      main: '#381280',
+      main: '#f7be2e',
     },
     info: {
       main: '#FDF6EA',
@@ -17,7 +17,7 @@ export const theme = createMuiTheme({
     h1: {
       fontWeight: 700,
       fontSize: '24px',
-      color: '#DBB46A',
+      color: '#FFFFFF',
     },
     h4: {
       fontWeight: 600,
