@@ -10,7 +10,6 @@ import {
   Hidden,
   makeStyles,
   Theme,
-  Typography,
 } from '@material-ui/core';
 import { Channel, Message, SocketAuthPacket } from '../../types';
 import MessageItem from './MessageItem';
@@ -63,17 +62,23 @@ const ChannelScreen: React.FC = () => {
   const [channel, setChannel] = useState<Channel | null>(null);
   const [isConnected, setConnected] = useState(false);
 
-  const getChannel = useCallback(async () => {
-    let channelResponse = await axios.get<Channel>(
-      `http://localhost:8000/v1/channel/${channelId}`,
-      {
-        withCredentials: true,
-      },
-    );
+  useEffect(() => {
+    const getChannel = async () => {
+      let channelResponse = await axios.get<Channel>(
+        `http://localhost:8000/v1/channel/${channelId}`,
+        {
+          withCredentials: true,
+        },
+      );
 
-    if (channelResponse.data) {
-      setChannel(channelResponse.data);
-    }
+      if (channelResponse.data) {
+        setChannel(channelResponse.data);
+        console.log(channelResponse.data);
+      }
+    };
+
+    setMessages([]);
+    getChannel();
   }, [channelId]);
 
   const socket: Socket = useMemo(
@@ -98,11 +103,13 @@ const ChannelScreen: React.FC = () => {
         } as SocketAuthPacket);
       })
       .on('confirm', () => {
-        getChannel();
         setConnected(true);
       })
       .on('user:join', ({ channel, user }: SocketAuthPacket) => {
         console.log('an user has joined the room: ', { channel, user });
+      })
+      .on('user:leave', ({ channel, user }: SocketAuthPacket) => {
+        console.log('An user has left the room: ', { channel, user });
       })
       .on('message', (message: Message) => {
         setMessages((messages) => [...messages, message]);
@@ -111,7 +118,7 @@ const ChannelScreen: React.FC = () => {
     return () => {
       socket && socket.disconnect();
     };
-  }, [channelId, getChannel, socket, user?.id, user?.nickname]);
+  }, [channelId, socket, user?.id, user?.nickname]);
 
   const sendMessage = (message: string) => {
     socket.emit('message', {
