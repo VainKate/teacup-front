@@ -2,6 +2,7 @@ import {
   AppBar,
   createStyles,
   Drawer,
+  Hidden,
   IconButton,
   makeStyles,
   Theme,
@@ -63,29 +64,31 @@ const NavBar: React.FC = () => {
     <AppBar position="sticky" className={classes.appBar}>
       <div className={classes.root}>
         <Toolbar>
-          {user && (
-            <>
-              <IconButton
-                edge="start"
-                className={classes.menuButton}
-                onClick={toggleDrawer(true)}
-                onKeyDown={toggleDrawer(false)}
-              >
-                <MenuIcon />
-              </IconButton>
-              <Drawer
-                open={isDrawerOpen}
-                variant="temporary"
-                anchor={'left'}
-                onClose={toggleDrawer(false)}
-                classes={{ paper: classes.drawerPaper }}
-              >
-                <DrawerContent />
-              </Drawer>
-            </>
-          )}
+          <Hidden smUp>
+            {user && (
+              <>
+                <IconButton
+                  edge="start"
+                  className={classes.menuButton}
+                  onClick={toggleDrawer(true)}
+                  onKeyDown={toggleDrawer(false)}
+                >
+                  <MenuIcon />
+                </IconButton>
+                <Drawer
+                  open={isDrawerOpen}
+                  variant="temporary"
+                  anchor={'left'}
+                  onClose={toggleDrawer(false)}
+                  classes={{ paper: classes.drawerPaper }}
+                >
+                  <DrawerContent />
+                </Drawer>
+              </>
+            )}
+          </Hidden>
           <Link
-            to="/"
+            to="/home"
             style={{ textDecoration: 'none' }}
             className={classes.title}
           >

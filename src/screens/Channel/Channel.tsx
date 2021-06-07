@@ -10,6 +10,7 @@ import {
   Hidden,
   makeStyles,
   Theme,
+  Typography,
 } from '@material-ui/core';
 import { Channel, Message, SocketAuthPacket } from '../../types';
 import MessageItem from './MessageItem';
@@ -24,6 +25,7 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {
       display: 'flex',
       [theme.breakpoints.up('sm')]: {
+        marginLeft: `${drawerWidth}px`,
         width: `calc(100vw - ${drawerWidth}px)`,
       },
     },
@@ -32,17 +34,17 @@ const useStyles = makeStyles((theme: Theme) =>
       flexDirection: 'column',
       overflow: 'auto',
       maxHeight: 'calc(100vh - 117px)',
+      [theme.breakpoints.up('sm')]: {
+        width: `calc(100vw - ${2 * drawerWidth}px)`,
+      },
     },
     input: {
       position: 'fixed',
       bottom: 0,
       width: '100%',
       [theme.breakpoints.up('sm')]: {
-        width: `calc(100vw - ${drawerWidth + 1}px)`,
+        width: `calc(100vw - ${2 * drawerWidth + 1}px)`,
       },
-    },
-    content: {
-      flexGrow: 1,
     },
     drawerPaper: {
       [theme.breakpoints.up('sm')]: {
@@ -126,37 +128,33 @@ const ChannelScreen: React.FC = () => {
 
   if (isConnected && channel) {
     return (
-      <>
+      <div>
         <ChannelNav channel={channel} />
         <div className={classes.root}>
-          <main className={classes.content}>
-            <div className={classes.messageList}>
-              {messages.map((message) => (
-                <MessageItem
-                  message={message}
-                  key={message.id}
-                  isForeign={message.user.id !== user?.id}
-                />
-              ))}
-            </div>
-            <Box className={classes.input}>
-              <ChatInput sendMessage={sendMessage} />
-            </Box>
-          </main>
-          <nav>
-            <Hidden xsDown implementation="css">
-              <Drawer
-                variant="persistent"
-                anchor="right"
-                open
-                classes={{ paper: classes.drawerPaper }}
-              >
-                <ChannelDrawer channel={channel} />
-              </Drawer>
-            </Hidden>
-          </nav>
+          <div className={classes.messageList}>
+            {messages.map((message) => (
+              <MessageItem
+                message={message}
+                key={message.id}
+                isForeign={message.user.id !== user?.id}
+              />
+            ))}
+          </div>
+          <Box className={classes.input}>
+            <ChatInput sendMessage={sendMessage} />
+          </Box>
         </div>
-      </>
+        <Hidden xsDown implementation="css">
+          <Drawer
+            variant="persistent"
+            anchor="right"
+            open
+            classes={{ paper: classes.drawerPaper }}
+          >
+            <ChannelDrawer channel={channel} />
+          </Drawer>
+        </Hidden>
+      </div>
     );
   }
 

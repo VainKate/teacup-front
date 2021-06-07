@@ -1,4 +1,10 @@
-import { Typography } from '@material-ui/core';
+import {
+  Box,
+  createStyles,
+  makeStyles,
+  Theme,
+  Typography,
+} from '@material-ui/core';
 import axios from 'axios';
 import { useContext, useEffect, useState } from 'react';
 import ChannelList from '../components/ChannelList';
@@ -6,7 +12,18 @@ import NavBar from '../components/NavBar';
 import { AuthContext } from '../context/auth';
 import { Channel } from '../types';
 
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      [theme.breakpoints.up('sm')]: {
+        marginLeft: `240px`,
+      },
+    },
+  }),
+);
+
 const HomeScreen: React.FC = () => {
+  const classes = useStyles();
   const [loadingRecommendedChannels, setLoadingRecommendedChannels] =
     useState(true);
   const [userRecommendedChannels, setUserRecommendedChannels] =
@@ -35,16 +52,18 @@ const HomeScreen: React.FC = () => {
   return (
     <div>
       <NavBar />
-      <Typography variant="h4">Tes Salons</Typography>
-      {user && user.channels && (
-        <ChannelList loading={!user} channels={user.channels} />
-      )}
+      <Box className={classes.root}>
+        <Typography variant="h4">Tes Salons</Typography>
+        {user && user.channels && (
+          <ChannelList loading={!user} channels={user.channels} />
+        )}
 
-      <Typography variant="h4">Recommandé pour toi</Typography>
-      <ChannelList
-        loading={loadingRecommendedChannels}
-        channels={userRecommendedChannels}
-      />
+        <Typography variant="h4">Recommandé pour toi</Typography>
+        <ChannelList
+          loading={loadingRecommendedChannels}
+          channels={userRecommendedChannels}
+        />
+      </Box>
     </div>
   );
 };
