@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router';
 import { AuthContext } from '../../context/auth';
 import { io, Socket } from 'socket.io-client';
@@ -59,6 +59,7 @@ const ChannelScreen: React.FC = () => {
   const { user } = useContext(AuthContext);
   const { channelId } = useParams<{ channelId: string }>();
 
+  const socket = useRef<Socket>();
   const [channel, setChannel] = useState<Channel | null>(null);
   const [isConnected, setConnected] = useState(false);
 
@@ -79,49 +80,47 @@ const ChannelScreen: React.FC = () => {
 
     setMessages([]);
     getChannel();
-  }, [channelId]);
 
-  const socket: Socket = useMemo(
-    () =>
-      io('localhost:8000', {
-        transports: ['websocket'],
-        reconnection: true,
-        reconnectionDelay: 500,
-        reconnectionAttempts: 10,
-      }),
-    [],
-  );
+    socket.current = io('localhost:8000', {
+      transports: ['websocket'],
+      reconnection: true,
+      reconnectionDelay: 500,
+      reconnectionAttempts: 10,
+    });
+  }, [channelId]);
 
   const [messages, setMessages] = useState<Array<Message>>([]);
 
   useEffect(() => {
-    socket
-      .on('connect', () => {
-        socket.emit('auth', {
-          channel: { id: parseInt(channelId) },
-          user: { id: user?.id, nickname: user?.nickname },
-        } as SocketAuthPacket);
-      })
-      .on('confirm', () => {
-        setConnected(true);
-      })
-      .on('user:join', ({ channel, user }: SocketAuthPacket) => {
-        console.log('an user has joined the room: ', { channel, user });
-      })
-      .on('user:leave', ({ channel, user }: SocketAuthPacket) => {
-        console.log('An user has left the room: ', { channel, user });
-      })
-      .on('message', (message: Message) => {
-        setMessages((messages) => [...messages, message]);
-      });
+    socket &&
+      socket.current &&
+      socket.current
+        .on('connect', () => {
+          socket.current!.emit('auth', {
+            channel: { id: parseInt(channelId) },
+            user: { id: user?.id, nickname: user?.nickname },
+          } as SocketAuthPacket);
+        })
+        .on('confirm', () => {
+          setConnected(true);
+        })
+        .on('user:join', ({ channel, user }: SocketAuthPacket) => {
+          console.log('an user has joined the room: ', { channel, user });
+        })
+        .on('user:leave', ({ channel, user }: SocketAuthPacket) => {
+          console.log('An user has left the room: ', { channel, user });
+        })
+        .on('message', (message: Message) => {
+          setMessages((messages) => [...messages, message]);
+        });
 
     return () => {
-      socket && socket.disconnect();
+      socket && socket.current!.disconnect();
     };
   }, [channelId, socket, user?.id, user?.nickname]);
 
   const sendMessage = (message: string) => {
-    socket.emit('message', {
+    socket.current!.emit('message', {
       user: {
         id: user?.id,
         nickname: user?.nickname,
