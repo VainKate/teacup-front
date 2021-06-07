@@ -74,12 +74,10 @@ const ChannelScreen: React.FC = () => {
 
       if (channelResponse.data) {
         setChannel(channelResponse.data);
-        console.log(channelResponse.data);
       }
     };
 
     setMessages([]);
-    getChannel();
 
     socket.current = io('localhost:8000', {
       transports: ['websocket'],
@@ -87,6 +85,10 @@ const ChannelScreen: React.FC = () => {
       reconnectionDelay: 500,
       reconnectionAttempts: 10,
     });
+
+    setTimeout(() => {
+      getChannel();
+    }, 50);
   }, [channelId]);
 
   const [messages, setMessages] = useState<Array<Message>>([]);
