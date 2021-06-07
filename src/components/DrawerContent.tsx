@@ -1,5 +1,6 @@
 import {
   Avatar,
+  Box,
   Divider,
   List,
   ListItem,
@@ -22,7 +23,7 @@ const DrawerContent: React.FC = () => {
   };
 
   return (
-    <div>
+    <Box paddingBottom="60px">
       <List>
         <ListItem button key={'home'} component={Link} to="/home">
           <ListItemIcon>
@@ -62,7 +63,7 @@ const DrawerContent: React.FC = () => {
           <ListItemText primary={'Se déconnecter'}></ListItemText>
         </ListItem>
       </List>
-    </div>
+    </Box>
   );
 };
 
