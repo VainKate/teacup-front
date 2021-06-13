@@ -6,9 +6,13 @@ import UserItem from './UserItem';
 const useStyles = makeStyles(() =>
   createStyles({
     title: {
-      padding: '15px',
+      padding: '15px 20px',
       backgroundColor: '#454545',
       color: 'white',
+    },
+    userState: {
+      fontWeight: 600,
+      marginBottom: '0.5rem',
     },
   }),
 );
@@ -34,21 +38,29 @@ const ChannelDrawer: React.FC<{ channel: Channel }> = ({ channel }) => {
           {channel.usersCount ?? channel.users?.length} utilisateurs
         </Typography>
       </Box>
-      <Box paddingX="10px">
+      <Box paddingX="20px">
         {onlineUsers && (
           <>
-            <Typography>En ligne - {onlineUsers.length}</Typography>
-            {onlineUsers.map((user) => (
-              <UserItem key={user.id} user={user} />
-            ))}
+            <Box paddingY="15px">
+              <Typography className={classes.userState}>
+                En ligne - {onlineUsers.length}
+              </Typography>
+              {onlineUsers.map((user) => (
+                <UserItem key={user.id} user={user} />
+              ))}
+            </Box>
           </>
         )}
         {offlineUsers && (
           <>
-            <Typography>Hors ligne - {offlineUsers.length}</Typography>
-            {offlineUsers!.map((user) => (
-              <UserItem key={user.id} user={user} />
-            ))}
+            <Box paddingY="15px">
+              <Typography className={classes.userState}>
+                Hors ligne - {offlineUsers.length}
+              </Typography>
+              {offlineUsers!.map((user) => (
+                <UserItem key={user.id} user={user} />
+              ))}
+            </Box>
           </>
         )}
       </Box>

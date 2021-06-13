@@ -17,13 +17,17 @@ import ChannelDrawer from './ChannelDrawer';
 import GroupIcon from '@material-ui/icons/Group';
 import { AuthContext } from '../../context/auth';
 import DrawerContent from '../../components/DrawerContent';
+import { Box } from '@material-ui/core';
 
-const drawerWidth = 240;
+const drawerWidth = 290;
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       flexGrow: 1,
+    },
+    toolbar: {
+      justifyContent: 'space-between',
     },
     appBar: {
       zIndex: theme.zIndex.drawer + 1,
@@ -67,29 +71,31 @@ const ChannelNav: React.FC<{ channel: Channel }> = ({ channel }) => {
   return (
     <AppBar position="sticky" className={classes.appBar}>
       <div className={classes.root}>
-        <Toolbar>
-          {user && (
-            <Hidden smUp>
-              <IconButton
-                edge="start"
-                className={classes.menuButton}
-                onClick={toggleDrawer(true)}
-                onKeyDown={toggleDrawer(false)}
-              >
-                <MenuIcon />
-              </IconButton>
-              <Drawer
-                open={isDrawerOpen}
-                variant="temporary"
-                anchor={'left'}
-                onClose={toggleDrawer(false)}
-                classes={{ paper: classes.drawerPaper }}
-              >
-                <DrawerContent />
-              </Drawer>
-            </Hidden>
-          )}
-          <Typography># {channel.title}</Typography>
+        <Toolbar className={classes.toolbar}>
+          <Box display="flex" alignItems="center">
+            {user && (
+              <Hidden smUp>
+                <IconButton
+                  edge="start"
+                  className={classes.menuButton}
+                  onClick={toggleDrawer(true)}
+                  onKeyDown={toggleDrawer(false)}
+                >
+                  <MenuIcon />
+                </IconButton>
+                <Drawer
+                  open={isDrawerOpen}
+                  variant="temporary"
+                  anchor={'left'}
+                  onClose={toggleDrawer(false)}
+                  classes={{ paper: classes.drawerPaper }}
+                >
+                  <DrawerContent />
+                </Drawer>
+              </Hidden>
+            )}
+            <Typography># {channel.title}</Typography>
+          </Box>
           <Hidden smUp>
             <IconButton color="inherit" edge="end" onClick={handleDrawerTogle}>
               <GroupIcon />

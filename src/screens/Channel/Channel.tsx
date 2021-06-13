@@ -17,7 +17,7 @@ import axios from 'axios';
 import ChannelNav from './ChannelNav';
 import ChannelDrawer from './ChannelDrawer';
 
-const drawerWidth = 240;
+const drawerWidth = 290;
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
