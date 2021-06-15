@@ -21,6 +21,7 @@ export const theme = createMuiTheme({
     },
     h4: {
       fontWeight: 600,
+      paddingTop: '1em',
     },
   },
 });
