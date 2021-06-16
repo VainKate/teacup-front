@@ -22,6 +22,7 @@ export type ChannelUser = {
 export type Tag = {
   id: number;
   name: string;
+  matchingTag?: boolean;
   created_at?: string;
   updated_at?: string;
 };

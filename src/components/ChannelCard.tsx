@@ -22,6 +22,10 @@ const useStyles = makeStyles(() =>
       paddingRight: '5px',
       fontSize: '1rem',
     },
+    tagActive: {
+      color: '#ECA245',
+      fontWeight: 'bold',
+    },
     card: {
       height: '100%',
       display: 'flex',
@@ -55,7 +59,11 @@ const ChannelCard: React.FC<{ channel: Channel }> = ({ channel }) => {
               <Typography
                 variant="h6"
                 color="textSecondary"
-                className={classes.tag}
+                className={
+                  tag.matchingTag
+                    ? `${classes.tag} ${classes.tagActive}`
+                    : `${classes.tag}`
+                }
                 key={tag.name}
               >
                 {tag.name}
