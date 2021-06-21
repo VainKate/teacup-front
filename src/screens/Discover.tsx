@@ -29,7 +29,7 @@ const DiscoverScreen: React.FC = () => {
 
   const getChannels = async () => {
     const channelsResponse = await axios.get(
-      'http://localhost:8000/v1/channels',
+      `${process.env.REACT_APP_API_URL}/v1/channels`,
       { withCredentials: true },
     );
 

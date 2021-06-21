@@ -34,13 +34,16 @@ const AuthProvider: React.FC = ({ children }) => {
 
   const getMe = async () => {
     try {
-      const meResponse = await axios.get('http://localhost:8000/v1/me', {
-        withCredentials: true,
-      });
+      const meResponse = await axios.get(
+        `${process.env.REACT_APP_API_URL}/v1/me`,
+        {
+          withCredentials: true,
+        },
+      );
 
       if (meResponse.data) {
         const userChannels = await axios.get(
-          'http://localhost:8000/v1/me/channels',
+          `${process.env.REACT_APP_API_URL}/v1/me/channels`,
           {
             withCredentials: true,
           },
