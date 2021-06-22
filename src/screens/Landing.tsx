@@ -16,6 +16,8 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       backgroundColor: theme.palette.primary.main,
+      maxHeight: '100vh',
+      minWidth: '100vw',
     },
   }),
 );
