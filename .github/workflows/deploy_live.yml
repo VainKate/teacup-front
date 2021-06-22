@@ -22,7 +22,7 @@ jobs:
       - name: Clean
         uses: appleboy/ssh-action@master
         with:
-          host: "${{ secrets.HOST }}"
+          host: "${{ secrets.HOST }}"
           username: "${{ secrets.USER }}"
           key: "${{ secrets.PRIVATE_KEY }}"
           script: |
