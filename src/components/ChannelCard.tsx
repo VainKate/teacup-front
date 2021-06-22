@@ -15,13 +15,27 @@ const useStyles = makeStyles(() =>
       display: 'flex',
       flexWrap: 'wrap',
       justifyContent: 'center',
+      paddingTop: '1rem',
     },
     tag: {
       paddingLeft: '5px',
       paddingRight: '5px',
+      fontSize: '1rem',
+    },
+    tagActive: {
+      color: '#ECA245',
+      fontWeight: 'bold',
     },
     card: {
       height: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'space-between',
+    },
+    content: {
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'space-around',
     },
   }),
 );
@@ -37,14 +51,19 @@ const ChannelCard: React.FC<{ channel: Channel }> = ({ channel }) => {
   return (
     <Grid item xs={12} sm={6} md={4} lg={3}>
       <Card className={classes.card} onClick={enterChannel}>
-        <CardContent>
+        <CardContent className={classes.content}>
           <Typography variant="h5">{channel.title}</Typography>
           <div className={classes.tagContainer}>
             {channel.tags?.map((tag) => (
               <Typography
                 variant="h6"
                 color="textSecondary"
-                className={classes.tag}
+                className={
+                  tag.matchingTag
+                    ? `${classes.tag} ${classes.tagActive}`
+                    : `${classes.tag}`
+                }
+                key={tag.name}
               >
                 {tag.name}
               </Typography>
