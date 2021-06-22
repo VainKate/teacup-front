@@ -36,7 +36,6 @@ const useStyles = makeStyles(() =>
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'space-around',
-      height: '-webkit-fill-available',
     },
   }),
 );
