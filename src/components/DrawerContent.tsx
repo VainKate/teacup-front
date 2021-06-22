@@ -32,7 +32,7 @@ const DrawerContent: React.FC = () => {
   const classes = useStyles();
 
   const onLogout = async () => {
-    await axios('http://localhost:8000/v1/logout', {
+    await axios(`${process.env.REACT_APP_API_URL}/v1/logout`, {
       method: 'post',
       withCredentials: true,
     });
