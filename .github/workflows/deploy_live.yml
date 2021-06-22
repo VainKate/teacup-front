@@ -28,6 +28,7 @@ jobs:
           script: |
             cd /var/www/html
             rm -rf teacup/
+            mkdir teacup
       - name: Deploy
         uses: horochx/deploy-via-scp@1.1.0
         with:
