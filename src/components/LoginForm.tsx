@@ -20,7 +20,7 @@ const LoginForm: React.FC = () => {
 
   const onSubmit = handleSubmit(async (data) => {
     const loginResponse = await axios.post<AuthenticatedUser>(
-      'http://localhost:8000/v1/login',
+      `${process.env.REACT_APP_API_URL}/v1/login`,
       {
         email: data.email,
         password: data.password,
@@ -30,7 +30,7 @@ const LoginForm: React.FC = () => {
 
     if (loginResponse.data) {
       const userChannels = await axios.get<Array<Channel>>(
-        'http://localhost:8000/v1/me/channels',
+        `${process.env.REACT_APP_API_URL}/v1/me/channels`,
         { withCredentials: true },
       );
       login({

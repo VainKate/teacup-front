@@ -68,7 +68,7 @@ const ChannelScreen: React.FC = () => {
   useEffect(() => {
     const getChannel = async () => {
       let channelResponse = await axios.get<Channel>(
-        `http://localhost:8000/v1/channel/${channelId}`,
+        `${process.env.REACT_APP_API_URL}/v1/channel/${channelId}`,
         {
           withCredentials: true,
         },
@@ -81,7 +81,7 @@ const ChannelScreen: React.FC = () => {
 
     setMessages([]);
 
-    socket.current = io('localhost:8000', {
+    socket.current = io(`${process.env.REACT_APP_API_URL}`, {
       transports: ['websocket'],
       reconnection: true,
       reconnectionDelay: 500,

@@ -33,7 +33,7 @@ const HomeScreen: React.FC = () => {
 
   const getRecommendedChannels = async () => {
     const channelsResponse = await axios.get(
-      'http://localhost:8000/v1/me/recommended',
+      `${process.env.REACT_APP_API_URL}/v1/me/recommended`,
       {
         withCredentials: true,
       },
