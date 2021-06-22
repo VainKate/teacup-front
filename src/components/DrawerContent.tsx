@@ -10,7 +10,8 @@ import {
   makeStyles,
   Typography,
 } from '@material-ui/core';
-import { Link } from 'react-router-dom';
+import axios from 'axios';
+import { Link, useHistory } from 'react-router-dom';
 import HomeIcon from '@material-ui/icons/Home';
 import ForumIcon from '@material-ui/icons/Forum';
 import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
@@ -26,11 +27,18 @@ const useStyles = makeStyles(() =>
 );
 
 const DrawerContent: React.FC = () => {
+  const history = useHistory();
   const { user, logout } = useContext(AuthContext);
   const classes = useStyles();
 
-  const onLogout = () => {
+  const onLogout = async () => {
+    await axios('http://localhost:8000/v1/logout', {
+      method: 'post',
+      withCredentials: true,
+    });
+
     logout();
+    history.replace('/home');
   };
 
   return (
