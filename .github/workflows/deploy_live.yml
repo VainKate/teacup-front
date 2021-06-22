@@ -19,11 +19,20 @@ jobs:
         run: |
           yarn install
           yarn build
+      - name: Clean
+        uses: appleboy/ssh-action@master
+        with:
+          host: "${{ secrets.HOST }}"
+          username: "${{ secrets.USER }}"
+          key: "${{ secrets.PRIVATE_KEY }}"
+          script: |
+            cd /var/www/html
+            rm -rf teacup/
       - name: Deploy
         uses: horochx/deploy-via-scp@1.1.0
         with:
           local: build/*
-          remote: /var/www/html
+          remote: /var/www/html/teacup
           host: "${{ secrets.HOST }}"
           user: "${{ secrets.USER }}"
           key: "${{ secrets.PRIVATE_KEY }}"
