@@ -1,3 +1,4 @@
+import { DialogContentText } from '@material-ui/core';
 import {
   Box,
   Button,
@@ -7,6 +8,7 @@ import {
   TextField,
 } from '@material-ui/core';
 import axios from 'axios';
+import { useState } from 'react';
 import { useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import { useHistory } from 'react-router';
@@ -15,11 +17,31 @@ import { AuthenticatedUser, Channel } from '../types';
 
 const LoginForm: React.FC = () => {
   const history = useHistory();
+  const [context, setContext] = useState<'login' | 'signup'>('login');
+
   const { login } = useContext(AuthContext);
   const { register, handleSubmit, formState } =
-    useForm<{ email: string; password: string }>();
+    useForm<{ email: string; nickname: string; password: string }>();
 
-  const onSubmit = handleSubmit(async (data) => {
+  const onSignup = async (data: {
+    email: string;
+    nickname: string;
+    password: string;
+  }) => {
+    await axios.post<AuthenticatedUser>(
+      `${process.env.REACT_APP_API_URL}/v1/signup`,
+      {
+        email: data.email,
+        nickname: data.nickname,
+        password: data.password,
+      },
+      {
+        withCredentials: true,
+      },
+    );
+  };
+
+  const onLogin = async (data: { email: string; password: string }) => {
     const loginResponse = await axios.post<AuthenticatedUser>(
       `${process.env.REACT_APP_API_URL}/v1/login`,
       {
@@ -40,29 +62,51 @@ const LoginForm: React.FC = () => {
       });
       history.replace('/');
     }
+  };
+
+  const onSubmit = handleSubmit(async (data) => {
+    if (context === 'signup') {
+      await onSignup(data);
+    }
+    onLogin(data);
   });
 
   return (
-    <div>
-      <DialogTitle>Login</DialogTitle>
+    <Box paddingBottom="10px">
+      <DialogTitle>
+        {context === 'login' ? 'Bon retour !' : 'Bienvenue !'}
+        <DialogContentText>
+          {context === 'login'
+            ? 'Tes infusions sont prêtes !'
+            : 'On prépare de nouvelles théières !'}
+        </DialogContentText>
+      </DialogTitle>
       <form onSubmit={onSubmit}>
         <DialogContent>
           <Box display="flex" flexDirection="column">
+            {context === 'signup' && (
+              <TextField
+                label="Surnom"
+                margin="dense"
+                type="text"
+                {...register('nickname', { required: context === 'signup' })}
+              />
+            )}
             <TextField
-              label="Mail address"
+              label="Adresse mail"
               margin="dense"
               type="email"
               {...register('email', { required: true })}
             />
             <TextField
-              label="Password"
+              label="Mot de passe"
               margin="dense"
               type="password"
               {...register('password', { required: true })}
             />
           </Box>
         </DialogContent>
-        <DialogActions>
+        <DialogContent>
           <Button
             variant="contained"
             color="primary"
@@ -72,11 +116,20 @@ const LoginForm: React.FC = () => {
             type="submit"
             disabled={formState.isSubmitting}
           >
-            Login
+            {context === 'login' ? 'Se connecter' : 'Continuer'}
           </Button>
-        </DialogActions>
+          {context === 'login' ? (
+            <Button size="small" onClick={() => setContext('signup')}>
+              Besoin d'un compte ?
+            </Button>
+          ) : (
+            <Button size="small" onClick={() => setContext('login')}>
+              Déjà un compte ?
+            </Button>
+          )}
+        </DialogContent>
       </form>
-    </div>
+    </Box>
   );
 };
 
