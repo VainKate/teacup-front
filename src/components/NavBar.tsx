@@ -71,6 +71,7 @@ const NavBar: React.FC = () => {
                 className={classes.menuButton}
                 onClick={toggleDrawer(true)}
                 onKeyDown={toggleDrawer(false)}
+                aria-label="burger-button"
               >
                 <MenuIcon />
               </IconButton>
