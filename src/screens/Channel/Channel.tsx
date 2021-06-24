@@ -65,6 +65,7 @@ const ChannelScreen: React.FC = () => {
   const socket = useRef<Socket>();
   const [channel, setChannel] = useState<Channel | null>(null);
   const [isConnected, setConnected] = useState(false);
+  const [messages, setMessages] = useState<Array<Message>>([]);
 
   useEffect(() => {
     const getChannel = async () => {
@@ -91,7 +92,41 @@ const ChannelScreen: React.FC = () => {
     });
   }, [channelId]);
 
-  const [messages, setMessages] = useState<Array<Message>>([]);
+  const onUserJoin = (user: SocketAuthPacket['user']) => {
+    if (!channel) {
+      return;
+    }
+
+    const userIndex = channel.users!.findIndex(
+      (channelUser) => channelUser.id === user.id,
+    );
+
+    if (userIndex === -1) {
+      channel.users?.push({ ...user, isLogged: true });
+    } else {
+      channel.users![userIndex].isLogged = true;
+    }
+
+    setChannel(channel);
+  };
+
+  const onUserLeave = (user: SocketAuthPacket['user']) => {
+    if (!channel) {
+      return;
+    }
+
+    const userIndex = channel.users!.findIndex(
+      (channelUser) => channelUser.id === user.id,
+    );
+
+    if (userIndex === -1) {
+      return;
+    }
+
+    channel.users![userIndex].isLogged = false;
+
+    setChannel(channel);
+  };
 
   useEffect(() => {
     socket &&
@@ -106,11 +141,11 @@ const ChannelScreen: React.FC = () => {
         .on('confirm', () => {
           setConnected(true);
         })
-        .on('user:join', ({ channel, user }: SocketAuthPacket) => {
-          console.log('an user has joined the room: ', { channel, user });
+        .on('user:join', ({ user }: SocketAuthPacket) => {
+          onUserJoin(user);
         })
-        .on('user:leave', ({ channel, user }: SocketAuthPacket) => {
-          console.log('An user has left the room: ', { channel, user });
+        .on('user:leave', ({ user }: SocketAuthPacket) => {
+          onUserLeave(user);
         })
         .on('message', (message: Message) => {
           setMessages((messages) => [...messages, message]);
@@ -119,6 +154,7 @@ const ChannelScreen: React.FC = () => {
     return () => {
       socket && socket.current!.disconnect();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channelId, socket, user?.id, user?.nickname]);
 
   const sendMessage = (message: string) => {
