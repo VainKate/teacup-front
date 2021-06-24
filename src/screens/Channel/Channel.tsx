@@ -5,6 +5,7 @@ import { io, Socket } from 'socket.io-client';
 import ChatInput from './ChatInput';
 import {
   Box,
+  CircularProgress,
   createStyles,
   Drawer,
   Hidden,
@@ -79,6 +80,7 @@ const ChannelScreen: React.FC = () => {
       }
     };
 
+    getChannel();
     setMessages([]);
 
     socket.current = io(`${process.env.REACT_APP_API_URL}`, {
@@ -87,10 +89,6 @@ const ChannelScreen: React.FC = () => {
       reconnectionDelay: 500,
       reconnectionAttempts: 10,
     });
-
-    setTimeout(() => {
-      getChannel();
-    }, 50);
   }, [channelId]);
 
   const [messages, setMessages] = useState<Array<Message>>([]);
@@ -139,20 +137,26 @@ const ChannelScreen: React.FC = () => {
   if (isConnected && channel) {
     return (
       <div>
-        <ChannelNav channel={channel} />
+        {channel && <ChannelNav channel={channel} />}
         <div className={classes.root}>
-          <div className={classes.messageList}>
-            {messages.map((message) => (
-              <MessageItem
-                message={message}
-                key={message.id}
-                isForeign={message.user.id !== user?.id}
-              />
-            ))}
-          </div>
-          <Box className={classes.input}>
-            <ChatInput sendMessage={sendMessage} />
-          </Box>
+          {!isConnected ? (
+            <CircularProgress />
+          ) : (
+            <>
+              <div className={classes.messageList}>
+                {messages.map((message) => (
+                  <MessageItem
+                    message={message}
+                    key={message.id}
+                    isForeign={message.user.id !== user?.id}
+                  />
+                ))}
+              </div>
+              <Box className={classes.input}>
+                <ChatInput sendMessage={sendMessage} />
+              </Box>
+            </>
+          )}
         </div>
         <Hidden xsDown implementation="css">
           <Drawer
@@ -161,7 +165,11 @@ const ChannelScreen: React.FC = () => {
             open
             classes={{ paper: classes.drawerPaper }}
           >
-            <ChannelDrawer channel={channel} />
+            {!isConnected ? (
+              <CircularProgress />
+            ) : (
+              <ChannelDrawer channel={channel} />
+            )}
           </Drawer>
         </Hidden>
       </div>
