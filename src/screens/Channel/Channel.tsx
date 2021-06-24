@@ -18,7 +18,8 @@ import axios from 'axios';
 import ChannelNav from './ChannelNav';
 import ChannelDrawer from './ChannelDrawer';
 
-const drawerWidth = 290;
+const navDrawerWidth = 240;
+const channelDrawerWidth = 290;
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -26,8 +27,8 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'flex',
       width: '100vw',
       [theme.breakpoints.up('sm')]: {
-        marginLeft: `${drawerWidth}px`,
-        width: `calc(100vw - ${drawerWidth}px)`,
+        marginLeft: `${navDrawerWidth}px`,
+        width: `calc(100vw - ${navDrawerWidth}px)`,
       },
     },
     messageList: {
@@ -37,7 +38,7 @@ const useStyles = makeStyles((theme: Theme) =>
       maxHeight: 'calc(100vh - 117px)',
       width: '100vw',
       [theme.breakpoints.up('sm')]: {
-        width: `calc(100vw - ${2 * drawerWidth}px)`,
+        width: `calc(100vw - ${navDrawerWidth + channelDrawerWidth}px)`,
       },
     },
     input: {
@@ -45,14 +46,14 @@ const useStyles = makeStyles((theme: Theme) =>
       bottom: 0,
       width: '100%',
       [theme.breakpoints.up('sm')]: {
-        width: `calc(100vw - ${2 * drawerWidth + 1}px)`,
+        width: `calc(100vw - ${navDrawerWidth + channelDrawerWidth + 2}px)`,
       },
     },
     drawerPaper: {
       [theme.breakpoints.up('sm')]: {
         paddingTop: '60px',
       },
-      width: drawerWidth,
+      width: channelDrawerWidth,
     },
   }),
 );
