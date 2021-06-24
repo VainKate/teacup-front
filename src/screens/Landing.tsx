@@ -53,7 +53,12 @@ const LandingScreen: React.FC = () => {
           <Button variant="contained" color="inherit" onClick={openAuthDialog}>
             Login
           </Button>
-          <Dialog open={isAuthDialogOpen} onClose={handleAuthDialogClose}>
+          <Dialog
+            fullWidth
+            maxWidth="sm"
+            open={isAuthDialogOpen}
+            onClose={handleAuthDialogClose}
+          >
             <LoginForm />
           </Dialog>
         </div>

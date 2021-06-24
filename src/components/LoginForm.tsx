@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   DialogActions,
   DialogContent,
@@ -46,24 +47,26 @@ const LoginForm: React.FC = () => {
       <DialogTitle>Login</DialogTitle>
       <form onSubmit={onSubmit}>
         <DialogContent>
-          <TextField
-            label="Mail address"
-            margin="dense"
-            type="email"
-            {...register('email', { required: true })}
-          />
-          <TextField
-            label="Password"
-            margin="dense"
-            type="password"
-            {...register('password', { required: true })}
-          />
+          <Box display="flex" flexDirection="column">
+            <TextField
+              label="Mail address"
+              margin="dense"
+              type="email"
+              {...register('email', { required: true })}
+            />
+            <TextField
+              label="Password"
+              margin="dense"
+              type="password"
+              {...register('password', { required: true })}
+            />
+          </Box>
         </DialogContent>
         <DialogActions>
-          <Button name="cancel" id="cancel" type="button">
-            Cancel
-          </Button>
           <Button
+            variant="contained"
+            color="primary"
+            size="large"
             name="login"
             id="login"
             type="submit"
