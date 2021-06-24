@@ -68,6 +68,18 @@ const ChannelScreen: React.FC = () => {
   const [messages, setMessages] = useState<Array<Message>>([]);
 
   useEffect(() => {
+    setMessages([]);
+    setConnected(false);
+
+    socket.current = io(`${process.env.REACT_APP_API_URL}`, {
+      transports: ['websocket'],
+      reconnection: true,
+      reconnectionDelay: 500,
+      reconnectionAttempts: 10,
+    });
+  }, [channelId]);
+
+  useEffect(() => {
     const getChannel = async () => {
       let channelResponse = await axios.get<Channel>(
         `${process.env.REACT_APP_API_URL}/v1/channel/${channelId}`,
@@ -81,16 +93,9 @@ const ChannelScreen: React.FC = () => {
       }
     };
 
-    getChannel();
-    setMessages([]);
-
-    socket.current = io(`${process.env.REACT_APP_API_URL}`, {
-      transports: ['websocket'],
-      reconnection: true,
-      reconnectionDelay: 500,
-      reconnectionAttempts: 10,
-    });
-  }, [channelId]);
+    isConnected && getChannel();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isConnected]);
 
   const onUserJoin = (user: SocketAuthPacket['user']) => {
     if (!channel) {
@@ -170,49 +175,41 @@ const ChannelScreen: React.FC = () => {
     } as Message);
   };
 
-  if (isConnected && channel) {
-    return (
-      <div>
-        {channel && <ChannelNav channel={channel} />}
-        <div className={classes.root}>
-          {!isConnected ? (
-            <CircularProgress />
-          ) : (
-            <>
-              <div className={classes.messageList}>
-                {messages.map((message) => (
-                  <MessageItem
-                    message={message}
-                    key={message.id}
-                    isForeign={message.user.id !== user?.id}
-                  />
-                ))}
-              </div>
-              <Box className={classes.input}>
-                <ChatInput sendMessage={sendMessage} />
-              </Box>
-            </>
-          )}
-        </div>
-        <Hidden xsDown implementation="css">
-          <Drawer
-            variant="persistent"
-            anchor="right"
-            open
-            classes={{ paper: classes.drawerPaper }}
-          >
-            {!isConnected ? (
-              <CircularProgress />
-            ) : (
-              <ChannelDrawer channel={channel} />
-            )}
-          </Drawer>
-        </Hidden>
+  return (
+    <div>
+      {channel && <ChannelNav channel={channel} />}
+      <div className={classes.root}>
+        {!isConnected ? (
+          <CircularProgress />
+        ) : (
+          <>
+            <div className={classes.messageList}>
+              {messages.map((message) => (
+                <MessageItem
+                  message={message}
+                  key={message.id}
+                  isForeign={message.user.id !== user?.id}
+                />
+              ))}
+            </div>
+            <Box className={classes.input}>
+              <ChatInput sendMessage={sendMessage} />
+            </Box>
+          </>
+        )}
       </div>
-    );
-  }
-
-  return null;
+      <Hidden xsDown implementation="css">
+        <Drawer
+          variant="persistent"
+          anchor="right"
+          open
+          classes={{ paper: classes.drawerPaper }}
+        >
+          {channel && <ChannelDrawer channel={channel} />}
+        </Drawer>
+      </Hidden>
+    </div>
+  );
 };
 
 export default ChannelScreen;
