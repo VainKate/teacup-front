@@ -37,7 +37,7 @@ const LoginForm: React.FC = () => {
         ...loginResponse.data,
         channels: userChannels.data,
       });
-      history.replace('/home');
+      history.replace('/');
     }
   });
 

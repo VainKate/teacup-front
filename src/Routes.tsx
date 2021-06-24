@@ -57,11 +57,11 @@ const Routes = () => {
                 <PrivateRoute path="/channel/:channelId">
                   <ChannelScreen />
                 </PrivateRoute>
-                <PrivateRoute path="/home">
-                  <HomeScreen />
-                </PrivateRoute>
                 <PrivateRoute path="/discover">
                   <DiscoverScreen />
+                </PrivateRoute>
+                <PrivateRoute path="/">
+                  <HomeScreen />
                 </PrivateRoute>
               </Switch>
             </Box>

@@ -24,12 +24,6 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const LandingScreen: React.FC = () => {
   const classes = useStyles();
-  const { user } = useContext(AuthContext);
-  const history = useHistory();
-
-  if (user) {
-    history.replace('/home');
-  }
 
   const [isAuthDialogOpen, setAuthDialogOpen] = useState(false);
   const openAuthDialog = () => setAuthDialogOpen(true);

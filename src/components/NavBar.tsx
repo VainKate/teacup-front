@@ -87,7 +87,7 @@ const NavBar: React.FC = () => {
             </Hidden>
           )}
           <Link
-            to="/home"
+            to="/"
             style={{ textDecoration: 'none' }}
             className={classes.title}
           >

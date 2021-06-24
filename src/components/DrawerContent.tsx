@@ -38,13 +38,13 @@ const DrawerContent: React.FC = () => {
     });
 
     logout();
-    history.replace('/home');
+    history.replace('/');
   };
 
   return (
     <Box paddingBottom="60px">
       <List>
-        <ListItem button key={'home'} component={Link} to="/home">
+        <ListItem button key={'home'} component={Link} to="/">
           <ListItemIcon>
             <HomeIcon />
           </ListItemIcon>
