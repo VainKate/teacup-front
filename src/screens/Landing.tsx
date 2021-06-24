@@ -7,10 +7,8 @@ import {
   Theme,
   Typography,
 } from '@material-ui/core';
-import { useContext, useState } from 'react';
-import { useHistory } from 'react-router';
+import { useState } from 'react';
 import LoginForm from '../components/LoginForm';
-import { AuthContext } from '../context/auth';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
