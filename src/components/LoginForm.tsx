@@ -2,7 +2,6 @@ import { DialogContentText } from '@material-ui/core';
 import {
   Box,
   Button,
-  DialogActions,
   DialogContent,
   DialogTitle,
   TextField,
@@ -86,7 +85,7 @@ const LoginForm: React.FC = () => {
           <Box display="flex" flexDirection="column">
             {context === 'signup' && (
               <TextField
-                label="Surnom"
+                label="Pseudo"
                 margin="dense"
                 type="text"
                 {...register('nickname', { required: context === 'signup' })}
