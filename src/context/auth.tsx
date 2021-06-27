@@ -10,10 +10,12 @@ import { AuthenticatedUser } from '../types';
 
 const AuthContext = createContext<{
   user: AuthenticatedUser | null;
+  loading: boolean;
   login: (user: AuthenticatedUser) => void;
   logout: () => void;
 }>({
   user: null,
+  loading: true,
   login: (user: AuthenticatedUser) => {},
   logout: () => {},
 });
@@ -23,14 +25,19 @@ const authReducer = (state: any, action: { type: string; payload: any }) => {
     case 'LOGIN':
       return { ...state, user: action.payload };
     case 'LOGOUT':
-      return { ...state, user: null, joinedChannels: [] };
+      return { ...state, user: null };
+    case 'LOADING':
+      return { ...state, loading: action.payload };
     default:
       return state;
   }
 };
 
 const AuthProvider: React.FC = ({ children }) => {
-  const [state, dispatch] = useReducer(authReducer, { user: null });
+  const [state, dispatch] = useReducer(authReducer, {
+    user: null,
+    loading: true,
+  });
 
   const getMe = async () => {
     try {
@@ -52,6 +59,10 @@ const AuthProvider: React.FC = ({ children }) => {
         dispatch({
           type: 'LOGIN',
           payload: { ...meResponse.data, channels: userChannels.data },
+        });
+        dispatch({
+          type: 'LOADING',
+          payload: { loading: false },
         });
       }
     } catch (error) {
@@ -78,8 +89,8 @@ const AuthProvider: React.FC = ({ children }) => {
   }, []);
 
   const value = useMemo(() => {
-    return { user: state.user, login, logout };
-  }, [state.user, login, logout]);
+    return { user: state.user, loading: state.loading, login, logout };
+  }, [state.user, state.loading, login, logout]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
