@@ -96,14 +96,14 @@ const ChannelNav: React.FC<{ channel: Channel }> = ({ channel }) => {
             )}
             <Typography># {channel.title}</Typography>
           </Box>
-          <Hidden smUp>
+          <Hidden mdUp>
             <IconButton color="inherit" edge="end" onClick={handleDrawerTogle}>
               <GroupIcon />
             </IconButton>
           </Hidden>
         </Toolbar>
         <nav className={classes.drawer}>
-          <Hidden smUp implementation="css">
+          <Hidden mdUp implementation="css">
             <SwipeableDrawer
               variant="temporary"
               anchor="right"
