@@ -27,8 +27,8 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'flex',
       width: '100vw',
       [theme.breakpoints.up('sm')]: {
-        marginLeft: `${navDrawerWidth + 1}px`,
-        width: `calc(100vw - ${navDrawerWidth + 1}px)`,
+        marginLeft: `${navDrawerWidth}px`,
+        width: `calc(100vw - ${navDrawerWidth}px)`,
       },
     },
     messages: {
@@ -55,10 +55,12 @@ const useStyles = makeStyles((theme: Theme) =>
       bottom: 0,
       width: '100%',
       [theme.breakpoints.up('sm')]: {
-        width: `calc(100vw - ${navDrawerWidth}px)`,
+        width: `calc(100vw - ${navDrawerWidth + 1}px)`,
+        marginLeft: '1px',
       },
       [theme.breakpoints.up('md')]: {
-        width: `calc(100vw - ${navDrawerWidth + channelDrawerWidth}px)`,
+        width: `calc(100vw - ${navDrawerWidth + channelDrawerWidth + 2}px)`,
+        marginLeft: '1px',
       },
     },
     drawerPaper: {
