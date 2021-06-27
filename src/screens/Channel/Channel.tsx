@@ -38,6 +38,9 @@ const useStyles = makeStyles((theme: Theme) =>
       maxHeight: 'calc(100vh - 117px)',
       width: '100vw',
       [theme.breakpoints.up('sm')]: {
+        width: `calc(100vw - ${navDrawerWidth}px)`,
+      },
+      [theme.breakpoints.up('md')]: {
         width: `calc(100vw - ${navDrawerWidth + channelDrawerWidth}px)`,
       },
     },
@@ -46,7 +49,10 @@ const useStyles = makeStyles((theme: Theme) =>
       bottom: 0,
       width: '100%',
       [theme.breakpoints.up('sm')]: {
-        width: `calc(100vw - ${navDrawerWidth + channelDrawerWidth + 2}px)`,
+        width: `calc(100vw - ${navDrawerWidth}px)`,
+      },
+      [theme.breakpoints.up('md')]: {
+        width: `calc(100vw - ${navDrawerWidth + channelDrawerWidth}px)`,
       },
     },
     drawerPaper: {
@@ -199,7 +205,7 @@ const ChannelScreen: React.FC = () => {
           </>
         )}
       </div>
-      <Hidden xsDown implementation="css">
+      <Hidden smDown implementation="css">
         <Drawer
           variant="persistent"
           anchor="right"
