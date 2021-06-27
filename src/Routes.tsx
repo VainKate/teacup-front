@@ -1,5 +1,6 @@
 import {
   Box,
+  CircularProgress,
   createStyles,
   Drawer,
   Hidden,
@@ -20,6 +21,7 @@ import ChannelScreen from './screens/Channel/Channel';
 import DiscoverScreen from './screens/Discover';
 import HomeScreen from './screens/Home';
 import LandingScreen from './screens/Landing';
+import SplashScreen from './screens/Splash';
 
 const drawerWidth = 240;
 const useStyles = makeStyles((theme: Theme) =>
@@ -36,44 +38,51 @@ const useStyles = makeStyles((theme: Theme) =>
 const Routes = () => {
   const classes = useStyles();
 
-  const { user } = useContext(AuthContext);
+  const { user, loading } = useContext(AuthContext);
+
   return (
-    <Router>
-      <Switch>
-        {user ? (
-          <Route>
-            <Box display="flex" flex="1">
-              <Hidden xsDown implementation="css">
-                <Drawer
-                  variant="persistent"
-                  anchor="left"
-                  open
-                  classes={{ paper: classes.drawerPaper }}
-                >
-                  <DrawerContent />
-                </Drawer>
-              </Hidden>
-              <Switch>
-                <PrivateRoute path="/channel/:channelId">
-                  <ChannelScreen />
-                </PrivateRoute>
-                <PrivateRoute path="/discover">
-                  <DiscoverScreen />
-                </PrivateRoute>
-                <PrivateRoute path="/">
-                  <HomeScreen />
-                </PrivateRoute>
-              </Switch>
-            </Box>
-          </Route>
-        ) : (
-          <Route path="/">
-            <LandingScreen />
-          </Route>
-        )}
-        <Redirect to="/" />
-      </Switch>
-    </Router>
+    <>
+      {loading === true ? (
+        <SplashScreen />
+      ) : (
+        <Router>
+          <Switch>
+            {user ? (
+              <Route>
+                <Box display="flex" flex="1">
+                  <Hidden xsDown implementation="css">
+                    <Drawer
+                      variant="persistent"
+                      anchor="left"
+                      open
+                      classes={{ paper: classes.drawerPaper }}
+                    >
+                      <DrawerContent />
+                    </Drawer>
+                  </Hidden>
+                  <Switch>
+                    <PrivateRoute path="/channel/:channelId">
+                      <ChannelScreen />
+                    </PrivateRoute>
+                    <PrivateRoute path="/discover">
+                      <DiscoverScreen />
+                    </PrivateRoute>
+                    <PrivateRoute path="/">
+                      <HomeScreen />
+                    </PrivateRoute>
+                  </Switch>
+                </Box>
+              </Route>
+            ) : (
+              <Route path="/">
+                <LandingScreen />
+              </Route>
+            )}
+            <Redirect to="/" />
+          </Switch>
+        </Router>
+      )}
+    </>
   );
 };
 
