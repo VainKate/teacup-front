@@ -23,7 +23,7 @@ const authReducer = (state: any, action: { type: string; payload: any }) => {
     case 'LOGIN':
       return { ...state, user: action.payload };
     case 'LOGOUT':
-      return { ...state, user: null, joinedChannels: [] };
+      return { ...state, user: null };
     default:
       return state;
   }
