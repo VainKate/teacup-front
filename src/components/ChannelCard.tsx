@@ -31,6 +31,7 @@ const useStyles = makeStyles(() =>
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'space-between',
+      cursor: 'pointer',
     },
     content: {
       display: 'flex',
