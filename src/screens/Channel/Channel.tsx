@@ -5,6 +5,7 @@ import { io, Socket } from 'socket.io-client';
 import ChatInput from './ChatInput';
 import {
   Box,
+  CircularProgress,
   createStyles,
   Drawer,
   Hidden,
@@ -17,7 +18,8 @@ import axios from 'axios';
 import ChannelNav from './ChannelNav';
 import ChannelDrawer from './ChannelDrawer';
 
-const drawerWidth = 290;
+const navDrawerWidth = 240;
+const channelDrawerWidth = 290;
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -25,18 +27,24 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'flex',
       width: '100vw',
       [theme.breakpoints.up('sm')]: {
-        marginLeft: `${drawerWidth}px`,
-        width: `calc(100vw - ${drawerWidth}px)`,
+        marginLeft: `${navDrawerWidth + 1}px`,
+        width: `calc(100vw - ${navDrawerWidth + 1}px)`,
       },
+    },
+    messages: {
+      display: 'flex',
+      alignItems: 'flex-end',
+      height: 'calc(100vh - 117px - 0.15em)',
     },
     messageList: {
       display: 'flex',
       flexDirection: 'column',
       overflow: 'auto',
-      maxHeight: 'calc(100vh - 117px)',
+      maxHeight: 'calc(100vh - 117px - 2.2em)',
+      padding: '1em 0',
       width: '100vw',
       [theme.breakpoints.up('sm')]: {
-        width: `calc(100vw - ${2 * drawerWidth}px)`,
+        width: `calc(100vw - ${navDrawerWidth + channelDrawerWidth}px)`,
       },
     },
     input: {
@@ -44,14 +52,14 @@ const useStyles = makeStyles((theme: Theme) =>
       bottom: 0,
       width: '100%',
       [theme.breakpoints.up('sm')]: {
-        width: `calc(100vw - ${2 * drawerWidth + 1}px)`,
+        width: `calc(100vw - ${navDrawerWidth + channelDrawerWidth + 2}px)`,
       },
     },
     drawerPaper: {
       [theme.breakpoints.up('sm')]: {
         paddingTop: '60px',
       },
-      width: drawerWidth,
+      width: channelDrawerWidth,
     },
   }),
 );
@@ -64,6 +72,21 @@ const ChannelScreen: React.FC = () => {
   const socket = useRef<Socket>();
   const [channel, setChannel] = useState<Channel | null>(null);
   const [isConnected, setConnected] = useState(false);
+  const [messages, setMessages] = useState<Array<Message>>([]);
+
+  const messagesRef = useRef<null | HTMLDivElement>(null);
+
+  useEffect(() => {
+    setMessages([]);
+    setConnected(false);
+
+    socket.current = io(`${process.env.REACT_APP_API_URL}`, {
+      transports: ['websocket'],
+      reconnection: true,
+      reconnectionDelay: 500,
+      reconnectionAttempts: 10,
+    });
+  }, [channelId]);
 
   useEffect(() => {
     const getChannel = async () => {
@@ -79,21 +102,45 @@ const ChannelScreen: React.FC = () => {
       }
     };
 
-    setMessages([]);
+    isConnected && getChannel();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isConnected]);
 
-    socket.current = io(`${process.env.REACT_APP_API_URL}`, {
-      transports: ['websocket'],
-      reconnection: true,
-      reconnectionDelay: 500,
-      reconnectionAttempts: 10,
-    });
+  const onUserJoin = (user: SocketAuthPacket['user']) => {
+    if (!channel) {
+      return;
+    }
 
-    setTimeout(() => {
-      getChannel();
-    }, 50);
-  }, [channelId]);
+    const userIndex = channel.users!.findIndex(
+      (channelUser) => channelUser.id === user.id,
+    );
 
-  const [messages, setMessages] = useState<Array<Message>>([]);
+    if (userIndex === -1) {
+      channel.users?.push({ ...user, isLogged: true });
+    } else {
+      channel.users![userIndex].isLogged = true;
+    }
+
+    setChannel(channel);
+  };
+
+  const onUserLeave = (user: SocketAuthPacket['user']) => {
+    if (!channel) {
+      return;
+    }
+
+    const userIndex = channel.users!.findIndex(
+      (channelUser) => channelUser.id === user.id,
+    );
+
+    if (userIndex === -1) {
+      return;
+    }
+
+    channel.users![userIndex].isLogged = false;
+
+    setChannel(channel);
+  };
 
   useEffect(() => {
     socket &&
@@ -108,19 +155,27 @@ const ChannelScreen: React.FC = () => {
         .on('confirm', () => {
           setConnected(true);
         })
-        .on('user:join', ({ channel, user }: SocketAuthPacket) => {
-          console.log('an user has joined the room: ', { channel, user });
+        .on('user:join', ({ user }: SocketAuthPacket) => {
+          onUserJoin(user);
         })
-        .on('user:leave', ({ channel, user }: SocketAuthPacket) => {
-          console.log('An user has left the room: ', { channel, user });
+        .on('user:leave', ({ user }: SocketAuthPacket) => {
+          onUserLeave(user);
         })
         .on('message', (message: Message) => {
-          setMessages((messages) => [...messages, message]);
+          if (message.content) {
+            setMessages((messages) => [...messages, message]);
+
+            messagesRef.current?.scrollTo({
+              top: messagesRef.current?.scrollHeight,
+              behavior: 'smooth',
+            });
+          }
         });
 
     return () => {
       socket && socket.current!.disconnect();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channelId, socket, user?.id, user?.nickname]);
 
   const sendMessage = (message: string) => {
@@ -136,39 +191,43 @@ const ChannelScreen: React.FC = () => {
     } as Message);
   };
 
-  if (isConnected && channel) {
-    return (
-      <div>
-        <ChannelNav channel={channel} />
-        <div className={classes.root}>
-          <div className={classes.messageList}>
-            {messages.map((message) => (
-              <MessageItem
-                message={message}
-                key={message.id}
-                isForeign={message.user.id !== user?.id}
-              />
-            ))}
-          </div>
-          <Box className={classes.input}>
-            <ChatInput sendMessage={sendMessage} />
-          </Box>
-        </div>
-        <Hidden xsDown implementation="css">
-          <Drawer
-            variant="persistent"
-            anchor="right"
-            open
-            classes={{ paper: classes.drawerPaper }}
-          >
-            <ChannelDrawer channel={channel} />
-          </Drawer>
-        </Hidden>
+  return (
+    <div>
+      {channel && <ChannelNav channel={channel} />}
+      <div className={classes.root}>
+        {!isConnected ? (
+          <CircularProgress />
+        ) : (
+          <>
+            <div className={classes.messages}>
+              <div className={classes.messageList} ref={messagesRef}>
+                {messages.map((message) => (
+                  <MessageItem
+                    message={message}
+                    key={message.id}
+                    isForeign={message.user.id !== user?.id}
+                  />
+                ))}
+              </div>
+            </div>
+            <Box className={classes.input}>
+              <ChatInput sendMessage={sendMessage} />
+            </Box>
+          </>
+        )}
       </div>
-    );
-  }
-
-  return null;
+      <Hidden xsDown implementation="css">
+        <Drawer
+          variant="persistent"
+          anchor="right"
+          open
+          classes={{ paper: classes.drawerPaper }}
+        >
+          {channel && <ChannelDrawer channel={channel} />}
+        </Drawer>
+      </Hidden>
+    </div>
+  );
 };
 
 export default ChannelScreen;
