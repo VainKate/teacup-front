@@ -57,23 +57,25 @@ const DrawerContent: React.FC = () => {
           <ListItemText primary={'Découvrir'} />
         </ListItem>
       </List>
-      <Divider />
-      {user && user.channels && (
-        <List>
-          {user.channels.map((channel) => (
-            <ListItem
-              button
-              key={channel.id}
-              component={Link}
-              to={`/channel/${channel.id}`}
-            >
-              <Avatar>{channel.title.slice(0, 1)}</Avatar>
-              <Typography component="p" className={classes.channelName}>
-                {channel.title}
-              </Typography>
-            </ListItem>
-          ))}
-        </List>
+      {user && user.channels && user.channels.length > 0 && (
+        <>
+          <Divider />
+          <List>
+            {user.channels.map((channel) => (
+              <ListItem
+                button
+                key={channel.id}
+                component={Link}
+                to={`/channel/${channel.id}`}
+              >
+                <Avatar>{channel.title.slice(0, 1)}</Avatar>
+                <Typography component="p" className={classes.channelName}>
+                  {channel.title}
+                </Typography>
+              </ListItem>
+            ))}
+          </List>
+        </>
       )}
       <Divider />
       <List>

@@ -50,10 +50,20 @@ const LandingScreen: React.FC = () => {
           </p>
         </div>
         <div>
-          <Button variant="contained" color="inherit" onClick={openAuthDialog}>
-            Login
+          <Button
+            variant="outlined"
+            color="inherit"
+            size="large"
+            onClick={openAuthDialog}
+          >
+            Commencer
           </Button>
-          <Dialog open={isAuthDialogOpen} onClose={handleAuthDialogClose}>
+          <Dialog
+            fullWidth
+            maxWidth="sm"
+            open={isAuthDialogOpen}
+            onClose={handleAuthDialogClose}
+          >
             <LoginForm />
           </Dialog>
         </div>

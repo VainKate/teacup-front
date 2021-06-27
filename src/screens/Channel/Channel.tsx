@@ -27,15 +27,21 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'flex',
       width: '100vw',
       [theme.breakpoints.up('sm')]: {
-        marginLeft: `${navDrawerWidth}px`,
-        width: `calc(100vw - ${navDrawerWidth}px)`,
+        marginLeft: `${navDrawerWidth + 1}px`,
+        width: `calc(100vw - ${navDrawerWidth + 1}px)`,
       },
+    },
+    messages: {
+      display: 'flex',
+      alignItems: 'flex-end',
+      height: 'calc(100vh - 117px - 0.15em)',
     },
     messageList: {
       display: 'flex',
       flexDirection: 'column',
       overflow: 'auto',
-      maxHeight: 'calc(100vh - 117px)',
+      maxHeight: 'calc(100vh - 117px - 2.2em)',
+      padding: '1em 0',
       width: '100vw',
       [theme.breakpoints.up('sm')]: {
         width: `calc(100vw - ${navDrawerWidth}px)`,
@@ -73,6 +79,8 @@ const ChannelScreen: React.FC = () => {
   const [channel, setChannel] = useState<Channel | null>(null);
   const [isConnected, setConnected] = useState(false);
   const [messages, setMessages] = useState<Array<Message>>([]);
+
+  const messagesRef = useRef<null | HTMLDivElement>(null);
 
   useEffect(() => {
     setMessages([]);
@@ -160,7 +168,14 @@ const ChannelScreen: React.FC = () => {
           onUserLeave(user);
         })
         .on('message', (message: Message) => {
-          setMessages((messages) => [...messages, message]);
+          if (message.content) {
+            setMessages((messages) => [...messages, message]);
+
+            messagesRef.current?.scrollTo({
+              top: messagesRef.current?.scrollHeight,
+              behavior: 'smooth',
+            });
+          }
         });
 
     return () => {
@@ -190,14 +205,16 @@ const ChannelScreen: React.FC = () => {
           <CircularProgress />
         ) : (
           <>
-            <div className={classes.messageList}>
-              {messages.map((message) => (
-                <MessageItem
-                  message={message}
-                  key={message.id}
-                  isForeign={message.user.id !== user?.id}
-                />
-              ))}
+            <div className={classes.messages}>
+              <div className={classes.messageList} ref={messagesRef}>
+                {messages.map((message) => (
+                  <MessageItem
+                    message={message}
+                    key={message.id}
+                    isForeign={message.user.id !== user?.id}
+                  />
+                ))}
+              </div>
             </div>
             <Box className={classes.input}>
               <ChatInput sendMessage={sendMessage} />
