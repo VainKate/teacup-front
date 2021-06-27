@@ -19,7 +19,6 @@ const useStyles = makeStyles((theme: Theme) =>
       maxWidth: '70%',
       backgroundColor: '#A4A4A4',
       borderRadius: '10px',
-      flex: 1,
       alignSelf: 'flex-end',
     },
     author: {
