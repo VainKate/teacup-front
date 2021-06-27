@@ -1,10 +1,12 @@
-import { DialogContentText } from '@material-ui/core';
 import {
   Box,
   Button,
+  createStyles,
   DialogContent,
+  DialogContentText,
   DialogTitle,
   TextField,
+  makeStyles,
 } from '@material-ui/core';
 import axios from 'axios';
 import { useState } from 'react';
@@ -14,7 +16,22 @@ import { useHistory } from 'react-router';
 import { AuthContext } from '../context/auth';
 import { AuthenticatedUser, Channel } from '../types';
 
+const useStyles = makeStyles(() =>
+  createStyles({
+    buttonsContainer: {
+      display: 'flex',
+      justifyContent: 'space-around',
+      padding: '2.5em 0 1em',
+    },
+
+    formTitle: {
+      paddingBottom: '0',
+    },
+  }),
+);
+
 const LoginForm: React.FC = () => {
+  const classes = useStyles();
   const history = useHistory();
   const [context, setContext] = useState<'login' | 'signup'>('login');
 
@@ -71,8 +88,8 @@ const LoginForm: React.FC = () => {
   });
 
   return (
-    <Box paddingBottom="10px">
-      <DialogTitle>
+    <Box paddingBottom="10px" textAlign="center">
+      <DialogTitle className={classes.formTitle}>
         {context === 'login' ? 'Bon retour !' : 'Bienvenue !'}
         <DialogContentText>
           {context === 'login'
@@ -105,7 +122,7 @@ const LoginForm: React.FC = () => {
             />
           </Box>
         </DialogContent>
-        <DialogContent>
+        <DialogContent className={classes.buttonsContainer}>
           <Button
             variant="contained"
             color="primary"
