@@ -54,8 +54,15 @@ const HomeScreen: React.FC = () => {
       <NavBar />
       <Box className={classes.root}>
         <Typography variant="h4">Tes Salons</Typography>
-        {user && user.channels && (
+        {user && user.channels && user.channels.length > 0 ? (
           <ChannelList loading={!user} channels={user.channels} />
+        ) : (
+          <Box paddingY="10px">
+            <Typography>
+              Tu n'as encore rejoint aucun salon, mais pas de panique ! Une
+              sélection toute prête t'attend juste en dessous !
+            </Typography>
+          </Box>
         )}
 
         <Typography variant="h4">Recommandé pour toi</Typography>
