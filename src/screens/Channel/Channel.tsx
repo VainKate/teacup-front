@@ -74,7 +74,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const ChannelScreen: React.FC = () => {
   const classes = useStyles();
-  const { user } = useContext(AuthContext);
+  const { user, login } = useContext(AuthContext);
   const { channelId } = useParams<{ channelId: string }>();
 
   const socket = useRef<Socket>();
@@ -107,6 +107,16 @@ const ChannelScreen: React.FC = () => {
 
       if (channelResponse.data) {
         setChannel(channelResponse.data);
+
+        // Add channel to list of joined channels
+        if (
+          user?.channels.findIndex(
+            (joinedChannel) => joinedChannel.id === parseInt(channelId),
+          ) === -1
+        ) {
+          user.channels.push(channelResponse.data);
+          login(user);
+        }
       }
     };
 

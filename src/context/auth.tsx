@@ -79,7 +79,8 @@ const AuthProvider: React.FC = ({ children }) => {
 
   const value = useMemo(() => {
     return { user: state.user, login, logout };
-  }, [state.user, login, logout]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.user, state.user?.channels?.length, login, logout]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
