@@ -62,19 +62,44 @@ const ProfileScreen: React.FC = () => {
   const { register, handleSubmit, formState } = useForm<{
     email: string;
     nickname: string;
-    tags: [Tag];
-  }>({
-    defaultValues: {
-      email: user!.email,
-      nickname: user!.nickname,
-      tags: user!.tags,
-    },
-  });
+    tags: [string];
+  }>();
 
   const [isPasswordDialogOpen, setPasswordDialogOpen] = useState(false);
   const openPasswordDialog = () => setPasswordDialogOpen(true);
   const handlePasswordDialogClose = () => setPasswordDialogOpen(false);
-  const onSubmit = (data: any) => console.log(data);
+  const { login } = useContext(AuthContext);
+
+  const onSubmit = async (data: {
+    email: string;
+    nickname: string;
+    tags: [number];
+  }) => {
+    try {
+      console.log(data);
+      const meResponse = await axios.put(
+        `${process.env.REACT_APP_API_URL}/v1/me`,
+        {
+          ...data,
+          tags: userTags.map((userTag) => userTag.id),
+        },
+        {
+          withCredentials: true,
+        },
+      );
+
+      if (meResponse.data) {
+        console.log(meResponse.data);
+        login({
+          ...meResponse.data,
+          channels: user!.channels,
+        });
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
   const [tags, setTags] = useState<Array<Tag>>([]);
   const [availableTags, setAvailableTags] = useState<Array<Tag>>([]);
   const [userTags, setUserTags] = useState<Array<Tag>>(user!.tags);
@@ -83,6 +108,9 @@ const ProfileScreen: React.FC = () => {
     const getTags = async () => {
       const tagsResponse = await axios.get<Array<Tag>>(
         `${process.env.REACT_APP_API_URL}/v1/tags`,
+        {
+          withCredentials: true,
+        },
       );
 
       if (tagsResponse.data) {
@@ -112,7 +140,7 @@ const ProfileScreen: React.FC = () => {
                 <TextField
                   label="Adresse mail"
                   margin="dense"
-                  type="text"
+                  type="email"
                   placeholder={user!.email}
                   {...register('email')}
                 />
@@ -156,11 +184,17 @@ const ProfileScreen: React.FC = () => {
                 <Box margin="3em 0">
                   {userTags
                     .sort((a: Tag, b: Tag) => a.name.localeCompare(b.name))
-                    .map((userTag) => (
+                    .map((userTag, index) => (
                       <Chip
                         key={`tag${userTag.id}`}
                         className={`${classes.tag} ${classes.userTag}`}
                         label={userTag.name}
+                        onDelete={() => {
+                          const newUserTagsList = userTags.filter(
+                            (tag) => userTag.id !== tag.id,
+                          );
+                          setUserTags([...newUserTagsList]);
+                        }}
                       />
                     ))}
                 </Box>
@@ -178,8 +212,7 @@ const ProfileScreen: React.FC = () => {
                           onClick={() => {
                             const newUserTagsList = [...userTags];
                             newUserTagsList.push(availableTag);
-
-                            setUserTags(newUserTagsList);
+                            setUserTags([...newUserTagsList]);
                           }}
                         />
                       );
