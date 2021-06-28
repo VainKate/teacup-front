@@ -11,6 +11,7 @@ export type Message = {
 export type AuthenticatedUser = {
   id: number;
   nickname: string;
+  email: string;
   tags: Array<Tag>;
   channels: Array<Channel>;
 };

@@ -50,7 +50,7 @@ const HomeScreen: React.FC = () => {
   }, []);
 
   return (
-    <div>
+    <>
       <NavBar />
       <Box className={classes.root}>
         <Typography variant="h4">Tes Salons</Typography>
@@ -71,7 +71,7 @@ const HomeScreen: React.FC = () => {
           channels={userRecommendedChannels}
         />
       </Box>
-    </div>
+    </>
   );
 };
 

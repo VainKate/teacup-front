@@ -7,12 +7,7 @@ import {
   Theme,
 } from '@material-ui/core';
 import { useContext } from 'react';
-import {
-  BrowserRouter as Router,
-  Redirect,
-  Route,
-  Switch,
-} from 'react-router-dom';
+import { Redirect, Route, Switch } from 'react-router-dom';
 import DrawerContent from './components/DrawerContent';
 import { AuthContext } from './context/auth';
 import PrivateRoute from './routes/PrivateRoute';
@@ -20,6 +15,7 @@ import ChannelScreen from './screens/Channel/Channel';
 import DiscoverScreen from './screens/Discover';
 import HomeScreen from './screens/Home';
 import LandingScreen from './screens/Landing';
+import ProfileScreen from './screens/Profile';
 
 const drawerWidth = 240;
 const useStyles = makeStyles((theme: Theme) =>
@@ -38,11 +34,12 @@ const Routes = () => {
 
   const { user } = useContext(AuthContext);
   return (
-    <Router>
+    <>
+      {/* {user && !location.pathname.includes('channel') && <NavBar />} */}
       <Switch>
         {user ? (
           <Route>
-            <Box display="flex" flex="1">
+            <Box>
               <Hidden xsDown implementation="css">
                 <Drawer
                   variant="persistent"
@@ -60,6 +57,9 @@ const Routes = () => {
                 <PrivateRoute path="/discover">
                   <DiscoverScreen />
                 </PrivateRoute>
+                <PrivateRoute path="/profile">
+                  <ProfileScreen />
+                </PrivateRoute>
                 <PrivateRoute path="/">
                   <HomeScreen />
                 </PrivateRoute>
@@ -73,7 +73,7 @@ const Routes = () => {
         )}
         <Redirect to="/" />
       </Switch>
-    </Router>
+    </>
   );
 };
 
