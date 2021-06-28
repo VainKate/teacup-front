@@ -4,14 +4,12 @@ import {
   createStyles,
   DialogContent,
   TextField,
-  InputLabel,
   makeStyles,
   Theme,
   Typography,
   FormControl,
-  Dialog,
-  DialogTitle,
   Chip,
+  Dialog,
 } from '@material-ui/core';
 import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
@@ -19,6 +17,7 @@ import { useForm } from 'react-hook-form';
 import NavBar from '../components/NavBar';
 import { Tag } from '../types';
 import { AuthContext } from '../context/auth';
+import PasswordForm from '../components/PasswordForm';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -45,6 +44,9 @@ const useStyles = makeStyles((theme: Theme) =>
       justifyContent: 'space-around',
       padding: '2.5em 0 1em',
     },
+    tag: {
+      margin: '0.5em',
+    },
     userTag: {
       color: '#eca245',
     },
@@ -58,34 +60,24 @@ const ProfileScreen: React.FC = () => {
   const classes = useStyles();
   const { user } = useContext(AuthContext);
   const { register, handleSubmit, formState } = useForm<{
-    classic: {
-      email: string;
-      nickname: string;
-      tags: [Tag];
-    };
-    password: {
-      oldPassword: string | undefined;
-      newPassword: string | undefined;
-    };
+    email: string;
+    nickname: string;
+    tags: [Tag];
   }>({
     defaultValues: {
-      classic: {
-        email: user!.email,
-        nickname: user!.nickname,
-        tags: user!.tags,
-      },
-      password: {
-        oldPassword: undefined,
-        newPassword: undefined,
-      },
+      email: user!.email,
+      nickname: user!.nickname,
+      tags: user!.tags,
     },
   });
 
   const [isPasswordDialogOpen, setPasswordDialogOpen] = useState(false);
   const openPasswordDialog = () => setPasswordDialogOpen(true);
-  //   const handlePasswordDialogClose = () => setPasswordDialogOpen(false);
+  const handlePasswordDialogClose = () => setPasswordDialogOpen(false);
   const onSubmit = (data: any) => console.log(data);
   const [tags, setTags] = useState<Array<Tag>>([]);
+  const [availableTags, setAvailableTags] = useState<Array<Tag>>([]);
+  const [userTags, setUserTags] = useState<Array<Tag>>(user!.tags);
 
   useEffect(() => {
     const getTags = async () => {
@@ -94,134 +86,120 @@ const ProfileScreen: React.FC = () => {
       );
 
       if (tagsResponse.data) {
-        setTags(tagsResponse.data);
+        setTags([...tagsResponse.data]);
       }
     };
 
     getTags();
   }, []);
 
+  useEffect(() => {
+    const availableTags = tags.filter(
+      (tag) => !userTags.some((userTag) => userTag.id === tag.id),
+    );
+    setAvailableTags([...availableTags]);
+  }, [tags, userTags]);
+
   return (
     <>
       <NavBar />
       <Box className={classes.root}>
-        <Typography variant="h4">Tes infos personnelles</Typography>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <DialogContent>
-            <Box display="flex" flexDirection="column">
-              <TextField
-                label="Adresse mail"
-                margin="dense"
-                type="text"
-                placeholder={user!.email}
-                {...register('classic.email')}
-              />
-              <TextField
-                label="Pseudo"
-                margin="dense"
-                type="text"
-                placeholder={user!.nickname}
-                {...register('classic.nickname')}
-              />
-              <FormControl margin="dense">
-                <Button
-                  size="large"
-                  className={classes.updatePassword}
-                  onClick={openPasswordDialog}
-                >
-                  Modifier le mot de passe
-                </Button>
-              </FormControl>
-            </Box>
-          </DialogContent>
-        </form>
-        {/* <Dialog
-          fullWidth
-          maxWidth="sm"
-          open={isPasswordDialogOpen}
-          onClose={handlePasswordDialogClose}
-        >
-          <Box paddingBottom="10px" textAlign="center">
-            <DialogTitle className={classes.formTitle}>
-              Modifie ton mot de passe
-            </DialogTitle>
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <DialogContent>
-                <Box display="flex" flexDirection="column">
-                  <TextField
-                    label="Ancien mot de passe"
-                    margin="dense"
-                    type="password"
-                    {...(register('password.oldPassword'), { required: true })}
-                  />
-                  <TextField
-                    label="Nouveau mot de passe"
-                    margin="dense"
-                    type="password"
-                    {...(register('password.newPassword'), { required: true })}
-                  />
-                  <TextField
-                    label="Confirmer le nouveau mot de passe"
-                    margin="dense"
-                    type="password"
-                    {...(register('password.newPassword'), { required: true })}
-                  />
-                </Box>
-              </DialogContent>
-              <DialogContent className={classes.buttonsContainer}>
-                <Button size="large" onClick={handlePasswordDialogClose}>
-                  Annuler
-                </Button>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  size="large"
-                  name="updatePassword"
-                  id="updatePassword"
-                  type="submit"
-                  disabled={formState.isSubmitting}
-                >
-                  Valider
-                </Button>
-              </DialogContent>
-            </form>
-          </Box>
-        </Dialog> */}
-        <Typography variant="h4">Tes centres d'intérêts</Typography>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <DialogContent>
-            <Box>
-              {tags
-                .sort((a: Tag, b: Tag) => a.name.localeCompare(b.name))
-                .map((tag) => {
-                  const tagClass = user!.tags.some(
-                    (userTag) => userTag.id === tag.id,
-                  )
-                    ? classes.userTag
-                    : classes.availableTag;
-
-                  return (
-                    <Chip
-                      key={`tag${tag.id}`}
-                      className={tagClass}
-                      label={tag.name}
-                    />
-                  );
-                })}
-            </Box>
-          </DialogContent>
-          <Button
-            variant="contained"
-            color="primary"
-            size="large"
-            name="updateTags"
-            id="updateTags"
-            type="submit"
-            disabled={formState.isSubmitting}
+        <Box>
+          <Typography variant="h4">Tes infos personnelles</Typography>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <DialogContent>
+              <Box display="flex" flexDirection="column">
+                <TextField
+                  label="Adresse mail"
+                  margin="dense"
+                  type="text"
+                  placeholder={user!.email}
+                  {...register('email')}
+                />
+                <TextField
+                  label="Pseudo"
+                  margin="dense"
+                  type="text"
+                  placeholder={user!.nickname}
+                  {...register('nickname')}
+                />
+                <FormControl margin="dense">
+                  <Button
+                    size="large"
+                    className={classes.updatePassword}
+                    onClick={openPasswordDialog}
+                  >
+                    Modifier le mot de passe
+                  </Button>
+                </FormControl>
+              </Box>
+            </DialogContent>
+          </form>
+        </Box>
+        {isPasswordDialogOpen && (
+          <Dialog
+            fullWidth
+            maxWidth="sm"
+            open={isPasswordDialogOpen}
+            onClose={handlePasswordDialogClose}
           >
-            Valider
-          </Button>
-        </form>
+            <PasswordForm
+              handlePasswordDialogClose={handlePasswordDialogClose}
+            />
+          </Dialog>
+        )}
+        <Box>
+          <Typography variant="h4">Tes centres d'intérêts</Typography>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <DialogContent>
+              {!!userTags.length && (
+                <Box margin="3em 0">
+                  {userTags
+                    .sort((a: Tag, b: Tag) => a.name.localeCompare(b.name))
+                    .map((userTag) => (
+                      <Chip
+                        key={`tag${userTag.id}`}
+                        className={`${classes.tag} ${classes.userTag}`}
+                        label={userTag.name}
+                      />
+                    ))}
+                </Box>
+              )}
+              {!!availableTags.length && (
+                <Box margin="3em 0">
+                  {availableTags
+                    .sort((a: Tag, b: Tag) => a.name.localeCompare(b.name))
+                    .map((availableTag) => {
+                      return (
+                        <Chip
+                          key={`tag${availableTag.id}`}
+                          className={`${classes.tag} ${classes.availableTag}`}
+                          label={availableTag.name}
+                          onClick={() => {
+                            const newUserTagsList = [...userTags];
+                            newUserTagsList.push(availableTag);
+
+                            setUserTags(newUserTagsList);
+                          }}
+                        />
+                      );
+                    })}
+                </Box>
+              )}
+            </DialogContent>
+            <Button
+              variant="contained"
+              color="primary"
+              size="large"
+              name="updateTags"
+              id="updateTags"
+              type="submit"
+              disabled={formState.isSubmitting}
+            >
+              Valider
+            </Button>
+          </form>
+        </Box>
       </Box>
     </>
   );
