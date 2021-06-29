@@ -13,21 +13,6 @@ import { useForm } from 'react-hook-form';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    root: {
-      display: 'flex',
-      flexDirection: 'column',
-      height: 'calc(100vh - 64px)',
-      justifyContent: 'space-evenly',
-      [theme.breakpoints.up('sm')]: {
-        marginLeft: `240px`,
-      },
-    },
-    updatePassword: {
-      marginTop: '2em',
-    },
-    tagsContainer: {
-      height: '20em',
-    },
     formTitle: {
       paddingBottom: '0',
     },
@@ -35,15 +20,6 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'flex',
       justifyContent: 'space-around',
       padding: '2.5em 0 1em',
-    },
-    tag: {
-      margin: '0.5em',
-    },
-    userTag: {
-      color: '#eca245',
-    },
-    availableTag: {
-      color: 'white',
     },
   }),
 );
@@ -55,12 +31,7 @@ const PasswordForm: React.FC<{ handlePasswordDialogClose: () => void }> = ({
   const { register, handleSubmit, formState } = useForm<{
     oldPassword: string | undefined;
     newPassword: string | undefined;
-  }>({
-    defaultValues: {
-      oldPassword: undefined,
-      newPassword: undefined,
-    },
-  });
+  }>();
   const onSubmit = (data: any) => console.log(data);
 
   return (
