@@ -10,9 +10,9 @@ import {
   FormControl,
   Dialog,
 } from '@material-ui/core';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import axios from 'axios';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import NavBar from '../../components/NavBar';
 import { Tag } from '../../types';
 import { AuthContext } from '../../context/auth';
@@ -48,32 +48,41 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
+export type FormData = {
+  email: string;
+  nickname: string;
+  tags: Array<Tag>;
+};
+
 const ProfileScreen: React.FC = () => {
   const classes = useStyles();
+
   const { user, login } = useContext(AuthContext);
-  const { register, handleSubmit, formState } = useForm<{
-    email: string;
-    nickname: string;
-    tags: [string];
-  }>();
-  const [availableTags, setAvailableTags] = useState<Array<Tag>>([]);
-  const [userTags, setUserTags] = useState<Array<Tag>>(user!.tags);
+  console.log(user);
+
+  const { register, handleSubmit, formState, control, setValue, getValues } =
+    useForm<FormData>({
+      criteriaMode: 'all',
+      defaultValues: {
+        email: user!.email,
+        nickname: user!.nickname,
+        tags: user!.tags,
+      },
+    });
+
   const [isPasswordDialogOpen, setPasswordDialogOpen] = useState(false);
   const openPasswordDialog = () => setPasswordDialogOpen(true);
   const handlePasswordDialogClose = () => setPasswordDialogOpen(false);
 
-  const onSubmit = async (data: {
-    email: string;
-    nickname: string;
-    tags: [number];
-  }) => {
-    console.log(data);
+  const onSubmit = async (data: FormData) => {
+    console.log('coucou', data);
     try {
       const meResponse = await axios.put(
         `${process.env.REACT_APP_API_URL}/v1/me`,
         {
-          ...data,
-          tags: userTags.map((userTag) => userTag.id),
+          email: data.email,
+          nickname: data.nickname,
+          tags: data.tags.map((userTag) => userTag.id),
         },
         {
           withCredentials: true,
@@ -91,6 +100,16 @@ const ProfileScreen: React.FC = () => {
     }
   };
 
+  const selectTag = (tag: Tag) => {
+    setValue('tags', [...getValues('tags'), tag]);
+  };
+
+  const unselectTag = (tag: Tag) => {
+    setValue('tags', [
+      ...getValues('tags').filter((userTag) => userTag.id !== tag.id),
+    ]);
+  };
+
   return (
     <>
       <NavBar />
@@ -104,17 +123,15 @@ const ProfileScreen: React.FC = () => {
                   label="Adresse mail"
                   margin="dense"
                   type="email"
-                  defaultValue={user!.email}
                   placeholder={user!.email}
-                  {...register('email')}
+                  {...register('email', { required: true })}
                 />
                 <TextField
                   label="Pseudo"
                   margin="dense"
                   type="text"
-                  defaultValue={user!.nickname}
                   placeholder={user!.nickname}
-                  {...register('nickname')}
+                  {...register('nickname', { required: true })}
                 />
                 <FormControl margin="dense">
                   <Button
@@ -142,19 +159,22 @@ const ProfileScreen: React.FC = () => {
           )}
           <Box>
             <Typography variant="h4">Tes centres d'intérêts</Typography>
-            <TagsContainer
-              userTags={userTags}
-              setUserTags={setUserTags}
-              availableTags={availableTags}
-              setAvailableTags={setAvailableTags}
+            <Controller
+              control={control}
+              name="tags"
+              render={() => (
+                <TagsContainer
+                  userTags={getValues('tags')}
+                  selectTag={selectTag}
+                  unselectTag={unselectTag}
+                />
+              )}
             />
           </Box>
           <Button
             variant="contained"
             color="primary"
             size="large"
-            name="updateTags"
-            id="updateTags"
             type="submit"
             disabled={formState.isSubmitting}
           >

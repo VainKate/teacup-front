@@ -27,12 +27,13 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const TagsContainer: React.FC<{
   userTags: Tag[];
-  setUserTags: (tagsArray: Tag[]) => void;
-  availableTags: Tag[];
-  setAvailableTags: (tagArray: Tag[]) => void;
-}> = ({ userTags, setUserTags, availableTags, setAvailableTags }) => {
+  selectTag: (tag: Tag) => void;
+  unselectTag: (tag: Tag) => void;
+}> = ({ userTags, selectTag, unselectTag }) => {
   const classes = useStyles();
+
   const [tags, setTags] = useState<Array<Tag>>([]);
+  const [availableTags, setAvailableTags] = useState<Array<Tag>>([]);
 
   useEffect(() => {
     const getTags = async () => {
@@ -44,10 +45,9 @@ const TagsContainer: React.FC<{
       );
 
       if (tagsResponse.data) {
-        setTags([...tagsResponse.data]);
+        setTags(tagsResponse.data);
       }
     };
-    console.log('appel des tags');
     getTags();
   }, []);
 
@@ -56,7 +56,7 @@ const TagsContainer: React.FC<{
       (tag) => !userTags.some((userTag) => userTag.id === tag.id),
     );
     setAvailableTags([...availableTags]);
-  }, [setAvailableTags, tags, userTags]);
+  }, [tags, userTags]);
 
   return (
     <DialogContent>
@@ -69,12 +69,7 @@ const TagsContainer: React.FC<{
                 key={`tag${userTag.id}`}
                 className={`${classes.tag} ${classes.userTag}`}
                 label={userTag.name}
-                onDelete={() => {
-                  const newUserTagsList = userTags.filter(
-                    (tag) => userTag.id !== tag.id,
-                  );
-                  setUserTags([...newUserTagsList]);
-                }}
+                onDelete={() => unselectTag(userTag)}
               />
             ))}
         </Box>
@@ -83,20 +78,14 @@ const TagsContainer: React.FC<{
         <Box margin="3em 0">
           {availableTags
             .sort((a: Tag, b: Tag) => a.name.localeCompare(b.name))
-            .map((availableTag) => {
-              return (
-                <Chip
-                  key={`tag${availableTag.id}`}
-                  className={classes.tag}
-                  label={availableTag.name}
-                  onClick={() => {
-                    const newUserTagsList = [...userTags];
-                    newUserTagsList.push(availableTag);
-                    setUserTags([...newUserTagsList]);
-                  }}
-                />
-              );
-            })}
+            .map((availableTag) => (
+              <Chip
+                key={`tag${availableTag.id}`}
+                className={classes.tag}
+                label={availableTag.name}
+                onClick={() => selectTag(availableTag)}
+              />
+            ))}
         </Box>
       )}
     </DialogContent>
