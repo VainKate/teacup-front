@@ -84,7 +84,7 @@ const PasswordForm: React.FC<{ handlePasswordDialogClose: () => void }> = ({
               {...(register('newPassword'), { required: true })}
             />
             <TextField
-              label="Confirmer le nouveau mot de passe"
+              label="Confirmer le mot de passe"
               margin="dense"
               type="password"
               {...(register('newPassword'), { required: true })}

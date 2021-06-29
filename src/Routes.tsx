@@ -15,7 +15,7 @@ import ChannelScreen from './screens/Channel/Channel';
 import DiscoverScreen from './screens/Discover';
 import HomeScreen from './screens/Home';
 import LandingScreen from './screens/Landing';
-import ProfileScreen from './screens/Profile';
+import ProfileScreen from './screens/Profile/Profile';
 
 const drawerWidth = 240;
 const useStyles = makeStyles((theme: Theme) =>

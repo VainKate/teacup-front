@@ -14,20 +14,24 @@ import {
 import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useForm } from 'react-hook-form';
-import NavBar from '../components/NavBar';
-import { Tag } from '../types';
-import { AuthContext } from '../context/auth';
-import PasswordForm from '../components/PasswordForm';
+import NavBar from '../../components/NavBar';
+import { Tag } from '../../types';
+import { AuthContext } from '../../context/auth';
+import PasswordForm from './PasswordForm';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       display: 'flex',
       flexDirection: 'column',
-      height: 'calc(100vh - 64px)',
-      justifyContent: 'space-evenly',
+      padding: '0 .5em 2em',
       [theme.breakpoints.up('sm')]: {
         marginLeft: `240px`,
+      },
+    },
+    personalData: {
+      [theme.breakpoints.up('md')]: {
+        margin: '10em 0',
       },
     },
     updatePassword: {
@@ -64,11 +68,37 @@ const ProfileScreen: React.FC = () => {
     nickname: string;
     tags: [string];
   }>();
-
+  const [tags, setTags] = useState<Array<Tag>>([]);
+  const [availableTags, setAvailableTags] = useState<Array<Tag>>([]);
+  const [userTags, setUserTags] = useState<Array<Tag>>(user!.tags);
   const [isPasswordDialogOpen, setPasswordDialogOpen] = useState(false);
   const openPasswordDialog = () => setPasswordDialogOpen(true);
   const handlePasswordDialogClose = () => setPasswordDialogOpen(false);
   const { login } = useContext(AuthContext);
+
+  useEffect(() => {
+    const getTags = async () => {
+      const tagsResponse = await axios.get<Array<Tag>>(
+        `${process.env.REACT_APP_API_URL}/v1/tags`,
+        {
+          withCredentials: true,
+        },
+      );
+
+      if (tagsResponse.data) {
+        setTags([...tagsResponse.data]);
+      }
+    };
+    console.log('appel des tags');
+    getTags();
+  }, []);
+
+  useEffect(() => {
+    const availableTags = tags.filter(
+      (tag) => !userTags.some((userTag) => userTag.id === tag.id),
+    );
+    setAvailableTags([...availableTags]);
+  }, [tags, userTags]);
 
   const onSubmit = async (data: {
     email: string;
@@ -96,45 +126,17 @@ const ProfileScreen: React.FC = () => {
         });
       }
     } catch (error) {
-      console.log(error.message);
+      console.log(error.response.data);
     }
   };
-
-  const [tags, setTags] = useState<Array<Tag>>([]);
-  const [availableTags, setAvailableTags] = useState<Array<Tag>>([]);
-  const [userTags, setUserTags] = useState<Array<Tag>>(user!.tags);
-
-  useEffect(() => {
-    const getTags = async () => {
-      const tagsResponse = await axios.get<Array<Tag>>(
-        `${process.env.REACT_APP_API_URL}/v1/tags`,
-        {
-          withCredentials: true,
-        },
-      );
-
-      if (tagsResponse.data) {
-        setTags([...tagsResponse.data]);
-      }
-    };
-
-    getTags();
-  }, []);
-
-  useEffect(() => {
-    const availableTags = tags.filter(
-      (tag) => !userTags.some((userTag) => userTag.id === tag.id),
-    );
-    setAvailableTags([...availableTags]);
-  }, [tags, userTags]);
 
   return (
     <>
       <NavBar />
       <Box className={classes.root}>
-        <Box>
-          <Typography variant="h4">Tes infos personnelles</Typography>
-          <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Box className={classes.personalData}>
+            <Typography variant="h4">Tes infos personnelles</Typography>
             <DialogContent>
               <Box display="flex" flexDirection="column">
                 <TextField
@@ -157,28 +159,26 @@ const ProfileScreen: React.FC = () => {
                     className={classes.updatePassword}
                     onClick={openPasswordDialog}
                   >
-                    Modifier le mot de passe
+                    Modifier ton mot de passe
                   </Button>
                 </FormControl>
               </Box>
             </DialogContent>
-          </form>
-        </Box>
-        {isPasswordDialogOpen && (
-          <Dialog
-            fullWidth
-            maxWidth="sm"
-            open={isPasswordDialogOpen}
-            onClose={handlePasswordDialogClose}
-          >
-            <PasswordForm
-              handlePasswordDialogClose={handlePasswordDialogClose}
-            />
-          </Dialog>
-        )}
-        <Box>
-          <Typography variant="h4">Tes centres d'intérêts</Typography>
-          <form onSubmit={handleSubmit(onSubmit)}>
+          </Box>
+          {isPasswordDialogOpen && (
+            <Dialog
+              fullWidth
+              maxWidth="sm"
+              open={isPasswordDialogOpen}
+              onClose={handlePasswordDialogClose}
+            >
+              <PasswordForm
+                handlePasswordDialogClose={handlePasswordDialogClose}
+              />
+            </Dialog>
+          )}
+          <Box>
+            <Typography variant="h4">Tes centres d'intérêts</Typography>
             <DialogContent>
               {!!userTags.length && (
                 <Box margin="3em 0">
@@ -231,8 +231,8 @@ const ProfileScreen: React.FC = () => {
             >
               Valider
             </Button>
-          </form>
-        </Box>
+          </Box>
+        </form>
       </Box>
     </>
   );
