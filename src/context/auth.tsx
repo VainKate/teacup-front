@@ -42,9 +42,16 @@ const AuthProvider: React.FC = ({ children }) => {
       );
 
       if (meResponse.data) {
+        const userChannels = await axios.get(
+          `${process.env.REACT_APP_API_URL}/v1/me/channels`,
+          {
+            withCredentials: true,
+          },
+        );
+
         dispatch({
           type: 'LOGIN',
-          payload: { ...meResponse.data },
+          payload: { ...meResponse.data, channels: userChannels.data },
         });
       }
     } catch (error) {
