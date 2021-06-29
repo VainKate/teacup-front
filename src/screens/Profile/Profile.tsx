@@ -10,7 +10,7 @@ import {
   FormControl,
   Dialog,
 } from '@material-ui/core';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useForm } from 'react-hook-form';
 import NavBar from '../../components/NavBar';
@@ -67,6 +67,7 @@ const ProfileScreen: React.FC = () => {
     nickname: string;
     tags: [number];
   }) => {
+    console.log(data);
     try {
       const meResponse = await axios.put(
         `${process.env.REACT_APP_API_URL}/v1/me`,
@@ -80,7 +81,6 @@ const ProfileScreen: React.FC = () => {
       );
 
       if (meResponse.data) {
-        console.log(meResponse.data);
         login({
           ...meResponse.data,
           channels: user!.channels,
@@ -104,6 +104,7 @@ const ProfileScreen: React.FC = () => {
                   label="Adresse mail"
                   margin="dense"
                   type="email"
+                  defaultValue={user!.email}
                   placeholder={user!.email}
                   {...register('email')}
                 />
@@ -111,6 +112,7 @@ const ProfileScreen: React.FC = () => {
                   label="Pseudo"
                   margin="dense"
                   type="text"
+                  defaultValue={user!.nickname}
                   placeholder={user!.nickname}
                   {...register('nickname')}
                 />
