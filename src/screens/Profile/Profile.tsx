@@ -2,20 +2,20 @@ import {
   Box,
   Button,
   createStyles,
+  Dialog,
   DialogContent,
-  TextField,
+  FormControl,
   makeStyles,
+  TextField,
   Theme,
   Typography,
-  FormControl,
-  Dialog,
 } from '@material-ui/core';
-import React, { useContext, useState } from 'react';
 import axios from 'axios';
+import { useContext, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import NavBar from '../../components/NavBar';
-import { Tag } from '../../types';
 import { AuthContext } from '../../context/auth';
+import { Tag } from '../../types';
 import PasswordForm from './PasswordForm';
 import TagsContainer from './TagsContainer';
 
@@ -48,33 +48,21 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export type FormData = {
-  email: string;
-  nickname: string;
-  tags: Array<Tag>;
-};
-
-const ProfileScreen: React.FC = () => {
+function ProfileScreen() {
   const classes = useStyles();
-
   const { user, login } = useContext(AuthContext);
-  console.log(user);
+  console.log('coucou');
 
-  const { register, handleSubmit, formState, control, setValue, getValues } =
-    useForm<FormData>({
-      criteriaMode: 'all',
+  const { register, handleSubmit, formState, control, getValues, setValue } =
+    useForm({
       defaultValues: {
-        email: user!.email,
         nickname: user!.nickname,
+        email: user!.email,
         tags: user!.tags,
       },
     });
 
-  const [isPasswordDialogOpen, setPasswordDialogOpen] = useState(false);
-  const openPasswordDialog = () => setPasswordDialogOpen(true);
-  const handlePasswordDialogClose = () => setPasswordDialogOpen(false);
-
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: any) => {
     console.log('coucou', data);
     try {
       const meResponse = await axios.put(
@@ -82,7 +70,7 @@ const ProfileScreen: React.FC = () => {
         {
           email: data.email,
           nickname: data.nickname,
-          tags: data.tags.map((userTag) => userTag.id),
+          tags: data.tags.map((userTag: Tag) => userTag.id),
         },
         {
           withCredentials: true,
@@ -110,6 +98,17 @@ const ProfileScreen: React.FC = () => {
     ]);
   };
 
+  const [isPasswordDialogOpen, setPasswordDialogOpen] = useState(false);
+  const openPasswordDialog = () => setPasswordDialogOpen(true);
+  const handlePasswordDialogClose = () => setPasswordDialogOpen(false);
+
+  const { ref: nicknameRef, ...nicknameProps } = register('nickname', {
+    required: true,
+  });
+  const { ref: emailRef, ...emailProps } = register('email', {
+    required: true,
+  });
+
   return (
     <>
       <NavBar />
@@ -124,18 +123,22 @@ const ProfileScreen: React.FC = () => {
                   margin="dense"
                   type="email"
                   placeholder={user!.email}
-                  {...register('email', { required: true })}
+                  inputRef={emailRef}
+                  {...emailProps}
                 />
                 <TextField
                   label="Pseudo"
                   margin="dense"
                   type="text"
+                  required={true}
                   placeholder={user!.nickname}
-                  {...register('nickname', { required: true })}
+                  inputRef={nicknameRef}
+                  {...nicknameProps}
                 />
                 <FormControl margin="dense">
                   <Button
                     size="large"
+                    type="button"
                     className={classes.updatePassword}
                     onClick={openPasswordDialog}
                   >
@@ -145,18 +148,7 @@ const ProfileScreen: React.FC = () => {
               </Box>
             </DialogContent>
           </Box>
-          {isPasswordDialogOpen && (
-            <Dialog
-              fullWidth
-              maxWidth="sm"
-              open={isPasswordDialogOpen}
-              onClose={handlePasswordDialogClose}
-            >
-              <PasswordForm
-                handlePasswordDialogClose={handlePasswordDialogClose}
-              />
-            </Dialog>
-          )}
+
           <Box>
             <Typography variant="h4">Tes centres d'intérêts</Typography>
             <Controller
@@ -171,19 +163,32 @@ const ProfileScreen: React.FC = () => {
               )}
             />
           </Box>
+
           <Button
             variant="contained"
             color="primary"
             size="large"
             type="submit"
+            name="update"
+            id="update"
             disabled={formState.isSubmitting}
           >
             Valider
           </Button>
         </form>
       </Box>
+      {isPasswordDialogOpen && (
+        <Dialog
+          fullWidth
+          maxWidth="sm"
+          open={isPasswordDialogOpen}
+          onClose={handlePasswordDialogClose}
+        >
+          <PasswordForm handlePasswordDialogClose={handlePasswordDialogClose} />
+        </Dialog>
+      )}
     </>
   );
-};
+}
 
 export default ProfileScreen;
