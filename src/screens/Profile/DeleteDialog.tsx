@@ -42,7 +42,7 @@ const DeleteDialog: React.FC<{ handleDeleteDialogClose: () => void }> = ({
       });
       logout();
     } catch (error) {
-      console.log(error.response.data);
+      //   console.log(error.response.data);
     }
   };
 

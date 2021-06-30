@@ -53,12 +53,10 @@ const TagsContainer: React.FC<{
         setTags(tagsResponse.data);
       }
     };
-    try {
-      getTags();
-    } catch (error) {
+    getTags().catch((error) => {
       history.replace('/');
-    }
-  }, [history]);
+    });
+  }, []);
 
   useEffect(() => {
     const availableTags = tags.filter(

@@ -105,6 +105,7 @@ const LoginForm: React.FC = () => {
                 label="Pseudo"
                 margin="dense"
                 type="text"
+                required={true}
                 {...register('nickname', { required: context === 'signup' })}
               />
             )}
@@ -112,17 +113,28 @@ const LoginForm: React.FC = () => {
               label="Adresse mail"
               margin="dense"
               type="email"
+              required={true}
               {...register('email', { required: true })}
             />
             <TextField
               label="Mot de passe"
               margin="dense"
               type="password"
+              required={true}
               {...register('password', { required: true })}
             />
           </Box>
         </DialogContent>
         <DialogContent className={classes.buttonsContainer}>
+          {context === 'login' ? (
+            <Button size="small" onClick={() => setContext('signup')}>
+              Besoin d'un compte ?
+            </Button>
+          ) : (
+            <Button size="small" onClick={() => setContext('login')}>
+              Déjà un compte ?
+            </Button>
+          )}
           <Button
             variant="contained"
             color="primary"
@@ -134,15 +146,6 @@ const LoginForm: React.FC = () => {
           >
             {context === 'login' ? 'Se connecter' : 'Continuer'}
           </Button>
-          {context === 'login' ? (
-            <Button size="small" onClick={() => setContext('signup')}>
-              Besoin d'un compte ?
-            </Button>
-          ) : (
-            <Button size="small" onClick={() => setContext('login')}>
-              Déjà un compte ?
-            </Button>
-          )}
         </DialogContent>
       </form>
     </Box>

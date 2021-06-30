@@ -72,15 +72,22 @@ const ProfileScreen: React.FC = () => {
   const { user, login } = useContext(AuthContext);
 
   // Form
-  const { handleSubmit, formState, control, getValues, setValue } =
-    useForm<FormData>({
-      criteriaMode: 'all',
-      defaultValues: {
-        nickname: user!.nickname,
-        email: user!.email,
-        tags: user!.tags,
-      },
-    });
+  const {
+    handleSubmit,
+    formState,
+    control,
+    getValues,
+    setValue,
+    setError,
+    reset,
+  } = useForm<FormData>({
+    criteriaMode: 'all',
+    defaultValues: {
+      nickname: user!.nickname,
+      email: user!.email,
+      tags: user!.tags,
+    },
+  });
 
   const onSubmit = async (data: FormData) => {
     try {
@@ -103,7 +110,15 @@ const ProfileScreen: React.FC = () => {
         });
       }
     } catch (error) {
-      console.log(error.response.data);
+      if (
+        error.response.data.message.match(
+          /^Key \(email\)=\(.*\) already exists\.$/g,
+        )
+      ) {
+        setError('email', {
+          message: 'Cette adresse email est invalide.',
+        });
+      }
     }
   };
 
@@ -140,7 +155,7 @@ const ProfileScreen: React.FC = () => {
                   control={control}
                   name="email"
                   rules={{
-                    required: "L'adresse mail est obligatoire.",
+                    required: 'Cette adresse email est invalide.',
                     validate: (value) =>
                       value && value?.replaceAll(' ', '').length !== 0,
                   }}
