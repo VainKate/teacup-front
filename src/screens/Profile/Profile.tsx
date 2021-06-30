@@ -3,8 +3,6 @@ import {
   Button,
   createStyles,
   Dialog,
-  DialogContent,
-  FormControl,
   makeStyles,
   TextField,
   Theme,
@@ -24,7 +22,7 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {
       display: 'flex',
       flexDirection: 'column',
-      padding: '0 .5em 2em',
+      padding: '0 2em 2em',
       [theme.breakpoints.up('sm')]: {
         marginLeft: `240px`,
       },
@@ -48,13 +46,20 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-function ProfileScreen() {
+export type FormData = {
+  email: string;
+  nickname: string;
+  tags: Array<Tag>;
+};
+
+const ProfileScreen: React.FC = () => {
   const classes = useStyles();
   const { user, login } = useContext(AuthContext);
-  console.log('coucou');
 
-  const { register, handleSubmit, formState, control, getValues, setValue } =
-    useForm({
+  // Form
+  const { handleSubmit, formState, control, getValues, setValue } =
+    useForm<FormData>({
+      criteriaMode: 'all',
       defaultValues: {
         nickname: user!.nickname,
         email: user!.email,
@@ -62,15 +67,14 @@ function ProfileScreen() {
       },
     });
 
-  const onSubmit = async (data: any) => {
-    console.log('coucou', data);
+  const onSubmit = async (data: FormData) => {
     try {
       const meResponse = await axios.put(
         `${process.env.REACT_APP_API_URL}/v1/me`,
         {
           email: data.email,
           nickname: data.nickname,
-          tags: data.tags.map((userTag: Tag) => userTag.id),
+          tags: data.tags.map((tag) => tag.id),
         },
         {
           withCredentials: true,
@@ -98,16 +102,10 @@ function ProfileScreen() {
     ]);
   };
 
+  // Password dialog
   const [isPasswordDialogOpen, setPasswordDialogOpen] = useState(false);
   const openPasswordDialog = () => setPasswordDialogOpen(true);
   const handlePasswordDialogClose = () => setPasswordDialogOpen(false);
-
-  const { ref: nicknameRef, ...nicknameProps } = register('nickname', {
-    required: true,
-  });
-  const { ref: emailRef, ...emailProps } = register('email', {
-    required: true,
-  });
 
   return (
     <>
@@ -116,39 +114,59 @@ function ProfileScreen() {
         <form onSubmit={handleSubmit(onSubmit)}>
           <Box className={classes.personalData}>
             <Typography variant="h4">Tes infos personnelles</Typography>
-            <DialogContent>
-              <Box display="flex" flexDirection="column">
-                <TextField
-                  label="Adresse mail"
-                  margin="dense"
-                  type="email"
-                  placeholder={user!.email}
-                  inputRef={emailRef}
-                  {...emailProps}
-                />
-                <TextField
-                  label="Pseudo"
-                  margin="dense"
-                  type="text"
-                  required={true}
-                  placeholder={user!.nickname}
-                  inputRef={nicknameRef}
-                  {...nicknameProps}
-                />
-                <FormControl margin="dense">
-                  <Button
-                    size="large"
-                    type="button"
-                    className={classes.updatePassword}
-                    onClick={openPasswordDialog}
-                  >
-                    Modifier ton mot de passe
-                  </Button>
-                </FormControl>
-              </Box>
-            </DialogContent>
+            <Box display="flex" flexDirection="column">
+              <Controller
+                control={control}
+                name="email"
+                rules={{ required: 'You must provide an email address.' }}
+                render={({
+                  field: { onChange, onBlur, value, ref },
+                  fieldState: { error },
+                }) => (
+                  <TextField
+                    onBlur={onBlur}
+                    onChange={onChange}
+                    inputRef={ref}
+                    value={value}
+                    label="Adresse mail"
+                    margin="dense"
+                    id="email"
+                    error={!!error}
+                    helperText={error?.message}
+                  />
+                )}
+              />
+              <Controller
+                control={control}
+                name="nickname"
+                rules={{ required: 'You must provide an username.' }}
+                render={({
+                  field: { onChange, onBlur, value, ref },
+                  fieldState: { error },
+                }) => (
+                  <TextField
+                    onBlur={onBlur}
+                    onChange={onChange}
+                    inputRef={ref}
+                    value={value}
+                    label="Pseudo"
+                    margin="dense"
+                    id="nickname"
+                    error={!!error}
+                    helperText={error?.message}
+                  />
+                )}
+              />
+              <Button
+                size="large"
+                type="button"
+                className={classes.updatePassword}
+                onClick={openPasswordDialog}
+              >
+                Modifier ton mot de passe
+              </Button>
+            </Box>
           </Box>
-
           <Box>
             <Typography variant="h4">Tes centres d'intérêts</Typography>
             <Controller
@@ -163,15 +181,12 @@ function ProfileScreen() {
               )}
             />
           </Box>
-
           <Button
             variant="contained"
             color="primary"
             size="large"
             type="submit"
-            name="update"
-            id="update"
-            disabled={formState.isSubmitting}
+            disabled={formState.isSubmitting || !formState.isValid}
           >
             Valider
           </Button>
@@ -189,6 +204,6 @@ function ProfileScreen() {
       )}
     </>
   );
-}
+};
 
 export default ProfileScreen;

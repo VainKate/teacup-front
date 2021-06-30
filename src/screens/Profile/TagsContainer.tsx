@@ -1,13 +1,7 @@
-import {
-  Box,
-  createStyles,
-  makeStyles,
-  Theme,
-  Chip,
-  DialogContent,
-} from '@material-ui/core';
+import { Box, createStyles, makeStyles, Theme, Chip } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+
 import { Tag } from '../../types';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -59,7 +53,7 @@ const TagsContainer: React.FC<{
   }, [tags, userTags]);
 
   return (
-    <DialogContent>
+    <>
       {!!userTags.length && (
         <Box margin="3em 0">
           {userTags
@@ -88,7 +82,7 @@ const TagsContainer: React.FC<{
             ))}
         </Box>
       )}
-    </DialogContent>
+    </>
   );
 };
 
