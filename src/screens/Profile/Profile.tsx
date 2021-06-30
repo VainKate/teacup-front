@@ -4,10 +4,10 @@ import {
   createStyles,
   Dialog,
   makeStyles,
-  TextField,
   Theme,
   Typography,
 } from '@material-ui/core';
+import DeleteIcon from '@material-ui/icons/Delete';
 import axios from 'axios';
 import { useContext, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -15,6 +15,7 @@ import NavBar from '../../components/NavBar';
 import { AuthContext } from '../../context/auth';
 import { Tag } from '../../types';
 import PasswordForm from './PasswordForm';
+import PersonalData from './PersonalData';
 import TagsContainer from './TagsContainer';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -22,18 +23,17 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {
       display: 'flex',
       flexDirection: 'column',
-      padding: '0 2em 2em',
+      padding: '0 2em',
       [theme.breakpoints.up('sm')]: {
         marginLeft: `240px`,
       },
     },
-    personalData: {
-      [theme.breakpoints.up('md')]: {
-        margin: '10em 0',
-      },
-    },
-    updatePassword: {
-      marginTop: '2em',
+    form: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      minHeight: 'calc(100vh - 64px)',
     },
     formTitle: {
       paddingBottom: '0',
@@ -41,7 +41,12 @@ const useStyles = makeStyles((theme: Theme) =>
     buttonsContainer: {
       display: 'flex',
       justifyContent: 'space-around',
-      padding: '2.5em 0 1em',
+      padding: '3em 0',
+      width: '-webkit-fill-available',
+    },
+    deleteButton: {
+      backgroundColor: '#bf4646',
+      color: 'white',
     },
   }),
 );
@@ -111,85 +116,47 @@ const ProfileScreen: React.FC = () => {
     <>
       <NavBar />
       <Box className={classes.root}>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <Box className={classes.personalData}>
-            <Typography variant="h4">Tes infos personnelles</Typography>
-            <Box display="flex" flexDirection="column">
+        <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
+          <Box>
+            <PersonalData
+              openPasswordDialog={openPasswordDialog}
+              control={control}
+            />
+            <Box>
+              <Typography variant="h4">Tes centres d'intérêts</Typography>
               <Controller
                 control={control}
-                name="email"
-                rules={{ required: 'You must provide an email address.' }}
-                render={({
-                  field: { onChange, onBlur, value, ref },
-                  fieldState: { error },
-                }) => (
-                  <TextField
-                    onBlur={onBlur}
-                    onChange={onChange}
-                    inputRef={ref}
-                    value={value}
-                    label="Adresse mail"
-                    margin="dense"
-                    id="email"
-                    error={!!error}
-                    helperText={error?.message}
+                name="tags"
+                render={() => (
+                  <TagsContainer
+                    userTags={getValues('tags')}
+                    selectTag={selectTag}
+                    unselectTag={unselectTag}
                   />
                 )}
               />
-              <Controller
-                control={control}
-                name="nickname"
-                rules={{ required: 'You must provide an username.' }}
-                render={({
-                  field: { onChange, onBlur, value, ref },
-                  fieldState: { error },
-                }) => (
-                  <TextField
-                    onBlur={onBlur}
-                    onChange={onChange}
-                    inputRef={ref}
-                    value={value}
-                    label="Pseudo"
-                    margin="dense"
-                    id="nickname"
-                    error={!!error}
-                    helperText={error?.message}
-                  />
-                )}
-              />
-              <Button
-                size="large"
-                type="button"
-                className={classes.updatePassword}
-                onClick={openPasswordDialog}
-              >
-                Modifier ton mot de passe
-              </Button>
             </Box>
           </Box>
-          <Box>
-            <Typography variant="h4">Tes centres d'intérêts</Typography>
-            <Controller
-              control={control}
-              name="tags"
-              render={() => (
-                <TagsContainer
-                  userTags={getValues('tags')}
-                  selectTag={selectTag}
-                  unselectTag={unselectTag}
-                />
-              )}
-            />
+          <Box className={classes.buttonsContainer}>
+            <Button
+              className={classes.deleteButton}
+              variant="contained"
+              size="large"
+              type="button"
+              startIcon={<DeleteIcon />}
+            >
+              Supprimer le compte
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              size="large"
+              type="submit"
+              disabled={formState.isSubmitting || !formState.isValid}
+            >
+              Valider
+            </Button>
           </Box>
-          <Button
-            variant="contained"
-            color="primary"
-            size="large"
-            type="submit"
-            disabled={formState.isSubmitting || !formState.isValid}
-          >
-            Valider
-          </Button>
         </form>
       </Box>
       {isPasswordDialogOpen && (

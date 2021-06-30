@@ -1,20 +1,29 @@
 import { Box, createStyles, makeStyles, Theme, Chip } from '@material-ui/core';
+import AddCircleIcon from '@material-ui/icons/AddCircle';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 import { Tag } from '../../types';
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     tag: {
       margin: '0.5em',
+      '&:hover': {
+        backgroundColor: '#f7be2e36',
+        color: '#eca245',
+        border: '2px solid #eca245',
+        fontWeight: 'bold',
+      },
     },
     userTag: {
-      color: '#eca245',
-      fontWeight: 'bold',
-    },
-    availableTag: {
       color: 'white',
+      fontWeight: 'bold',
+      backgroundColor: '#f7be2e',
+    },
+    icon: {
+      color: 'blue',
     },
   }),
 );
@@ -25,6 +34,8 @@ const TagsContainer: React.FC<{
   unselectTag: (tag: Tag) => void;
 }> = ({ userTags, selectTag, unselectTag }) => {
   const classes = useStyles();
+
+  const history = useHistory();
 
   const [tags, setTags] = useState<Array<Tag>>([]);
   const [availableTags, setAvailableTags] = useState<Array<Tag>>([]);
@@ -42,8 +53,12 @@ const TagsContainer: React.FC<{
         setTags(tagsResponse.data);
       }
     };
-    getTags();
-  }, []);
+    try {
+      getTags();
+    } catch (error) {
+      history.replace('/');
+    }
+  }, [history]);
 
   useEffect(() => {
     const availableTags = tags.filter(
@@ -63,6 +78,7 @@ const TagsContainer: React.FC<{
                 key={`tag${userTag.id}`}
                 className={`${classes.tag} ${classes.userTag}`}
                 label={userTag.name}
+                onClick={() => unselectTag(userTag)}
                 onDelete={() => unselectTag(userTag)}
               />
             ))}
@@ -78,6 +94,8 @@ const TagsContainer: React.FC<{
                 className={classes.tag}
                 label={availableTag.name}
                 onClick={() => selectTag(availableTag)}
+                onDelete={() => selectTag(availableTag)}
+                deleteIcon={<AddCircleIcon className="icon" />}
               />
             ))}
         </Box>

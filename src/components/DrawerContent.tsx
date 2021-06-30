@@ -84,7 +84,7 @@ const DrawerContent: React.FC = () => {
           <ListItemIcon>
             <SettingsIcon />
           </ListItemIcon>
-          <ListItemText primary={'Paramètres'} />
+          <ListItemText primary={'Préférences'} />
         </ListItem>
         <ListItem button key={'logout'} onClick={onLogout}>
           <ListItemIcon>
