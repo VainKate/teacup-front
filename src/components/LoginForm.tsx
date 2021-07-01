@@ -7,6 +7,7 @@ import {
   DialogTitle,
   TextField,
   makeStyles,
+  Theme,
 } from '@material-ui/core';
 import axios from 'axios';
 import { useState } from 'react';
@@ -16,16 +17,27 @@ import { useHistory } from 'react-router';
 import { AuthContext } from '../context/auth';
 import { AuthenticatedUser, Channel } from '../types';
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     buttonsContainer: {
       display: 'flex',
       justifyContent: 'space-around',
-      padding: '2.5em 0 1em',
+      padding: '1.5em 0 1em',
+      flexWrap: 'wrap',
+      [theme.breakpoints.up('sm')]: {
+        flexWrap: 'no-wrap',
+      },
     },
 
     formTitle: {
       paddingBottom: '0',
+    },
+
+    button: {
+      marginTop: '1em',
+      [theme.breakpoints.up('sm')]: {
+        marginTop: 'none',
+      },
     },
   }),
 );
@@ -33,7 +45,7 @@ const useStyles = makeStyles(() =>
 const LoginForm: React.FC = () => {
   const classes = useStyles();
   const history = useHistory();
-  const [context, setContext] = useState<'login' | 'signup'>('login');
+  const [context, setContext] = useState<'login' | 'signup' | 'reset'>('login');
 
   const { login } = useContext(AuthContext);
   const { register, handleSubmit, formState } =
@@ -80,22 +92,72 @@ const LoginForm: React.FC = () => {
     }
   };
 
+  const onReset = async (data: { email: string }) => {
+    const loginResponse = await axios.post<AuthenticatedUser>(
+      `${process.env.REACT_APP_API_URL}/v1/login`,
+      {
+        email: data.email,
+      },
+      { withCredentials: true },
+    );
+
+    // if (loginResponse.data) {
+    //   const userChannels = await axios.get<Array<Channel>>(
+    //     `${process.env.REACT_APP_API_URL}/v1/me/channels`,
+    //     { withCredentials: true },
+    //   );
+    //   login({
+    //     ...loginResponse.data,
+    //     channels: userChannels.data,
+    //   });
+    //   history.replace('/');
+    // }
+  };
+
   const onSubmit = handleSubmit(async (data) => {
     if (context === 'signup') {
       await onSignup(data);
+    } else if (context === 'login') {
+      onLogin(data);
+    } else {
+      await onReset(data);
     }
-    onLogin(data);
   });
+
+  const formTitle = (context: 'login' | 'signup' | 'reset') => {
+    switch (context) {
+      case 'login':
+        return (
+          <>
+            Bon retour !
+            <DialogContentText>Tes infusions sont prêtes !</DialogContentText>
+          </>
+        );
+      case 'signup':
+        return (
+          <>
+            Bienvenue !
+            <DialogContentText>
+              On prépare de nouvelles théières !
+            </DialogContentText>
+          </>
+        );
+      case 'reset':
+        return (
+          <>
+            Ah mince !
+            <DialogContentText>
+              Donne nous l'adresse mail de ton compte, on s'occupe du reste !
+            </DialogContentText>
+          </>
+        );
+    }
+  };
 
   return (
     <Box paddingBottom="10px" textAlign="center">
       <DialogTitle className={classes.formTitle}>
-        {context === 'login' ? 'Bon retour !' : 'Bienvenue !'}
-        <DialogContentText>
-          {context === 'login'
-            ? 'Tes infusions sont prêtes !'
-            : 'On prépare de nouvelles théières !'}
-        </DialogContentText>
+        {formTitle(context)}
       </DialogTitle>
       <form onSubmit={onSubmit}>
         <DialogContent>
@@ -116,26 +178,49 @@ const LoginForm: React.FC = () => {
               required={true}
               {...register('email', { required: true })}
             />
-            <TextField
-              label="Mot de passe"
-              margin="dense"
-              type="password"
-              required={true}
-              {...register('password', { required: true })}
-            />
+            {(context === 'signup' || context === 'login') && (
+              <TextField
+                label="Mot de passe"
+                margin="dense"
+                type="password"
+                required={true}
+                {...register('password', { required: true })}
+              />
+            )}
           </Box>
         </DialogContent>
         <DialogContent className={classes.buttonsContainer}>
-          {context === 'login' ? (
-            <Button size="small" onClick={() => setContext('signup')}>
-              Besoin d'un compte ?
-            </Button>
+          {context === 'login' || context === 'reset' ? (
+            <>
+              <Button
+                className={classes.button}
+                size="small"
+                onClick={() => setContext('signup')}
+              >
+                Besoin d'un compte ?
+              </Button>
+
+              {context === 'login' && (
+                <Button
+                  className={classes.button}
+                  size="small"
+                  onClick={() => setContext('reset')}
+                >
+                  Mot de passe oublié ?
+                </Button>
+              )}
+            </>
           ) : (
-            <Button size="small" onClick={() => setContext('login')}>
+            <Button
+              className={classes.button}
+              size="small"
+              onClick={() => setContext('login')}
+            >
               Déjà un compte ?
             </Button>
           )}
           <Button
+            className={classes.button}
             variant="contained"
             color="primary"
             size="large"
@@ -144,7 +229,11 @@ const LoginForm: React.FC = () => {
             type="submit"
             disabled={formState.isSubmitting}
           >
-            {context === 'login' ? 'Se connecter' : 'Continuer'}
+            {context === 'login'
+              ? 'Se connecter'
+              : context === 'signup'
+              ? 'Continuer'
+              : 'Valider'}
           </Button>
         </DialogContent>
       </form>

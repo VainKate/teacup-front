@@ -16,6 +16,7 @@ import DiscoverScreen from './screens/Discover';
 import HomeScreen from './screens/Home';
 import LandingScreen from './screens/Landing';
 import ProfileScreen from './screens/Profile/Profile';
+import ResetPassword from './screens/ResetPassword';
 
 const drawerWidth = 240;
 const useStyles = makeStyles((theme: Theme) =>
@@ -35,7 +36,6 @@ const Routes = () => {
   const { user } = useContext(AuthContext);
   return (
     <>
-      {/* {user && !location.pathname.includes('channel') && <NavBar />} */}
       <Switch>
         {user ? (
           <Route>
@@ -51,6 +51,9 @@ const Routes = () => {
                 </Drawer>
               </Hidden>
               <Switch>
+                <Route path="/reset/:userKey">
+                  <ResetPassword />
+                </Route>
                 <PrivateRoute path="/channel/:channelId">
                   <ChannelScreen />
                 </PrivateRoute>
