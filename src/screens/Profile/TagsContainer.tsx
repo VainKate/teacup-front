@@ -56,7 +56,7 @@ const TagsContainer: React.FC<{
     getTags().catch((error) => {
       history.replace('/');
     });
-  }, []);
+  }, [history]);
 
   useEffect(() => {
     const availableTags = tags.filter(

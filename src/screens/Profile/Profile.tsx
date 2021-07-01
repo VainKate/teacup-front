@@ -72,22 +72,15 @@ const ProfileScreen: React.FC = () => {
   const { user, login } = useContext(AuthContext);
 
   // Form
-  const {
-    handleSubmit,
-    formState,
-    control,
-    getValues,
-    setValue,
-    setError,
-    reset,
-  } = useForm<FormData>({
-    criteriaMode: 'all',
-    defaultValues: {
-      nickname: user!.nickname,
-      email: user!.email,
-      tags: user!.tags,
-    },
-  });
+  const { handleSubmit, formState, control, getValues, setValue, setError } =
+    useForm<FormData>({
+      criteriaMode: 'all',
+      defaultValues: {
+        nickname: user!.nickname,
+        email: user!.email,
+        tags: user!.tags,
+      },
+    });
 
   const onSubmit = async (data: FormData) => {
     try {
