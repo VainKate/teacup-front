@@ -1,4 +1,11 @@
-import { Box, createStyles, makeStyles, Theme, Chip } from '@material-ui/core';
+import {
+  Box,
+  createStyles,
+  makeStyles,
+  Theme,
+  Chip,
+  Typography,
+} from '@material-ui/core';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
@@ -11,14 +18,13 @@ const useStyles = makeStyles((theme: Theme) =>
     tag: {
       margin: '0.5em',
       '&:hover': {
-        backgroundColor: '#f7be2e36',
-        color: '#eca245',
+        backgroundColor: '#eca245',
         border: '2px solid #eca245',
         fontWeight: 'bold',
       },
     },
     userTag: {
-      color: 'white',
+      color: 'black',
       fontWeight: 'bold',
       backgroundColor: '#f7be2e',
     },
@@ -83,20 +89,25 @@ const TagsContainer: React.FC<{
         </Box>
       )}
       {!!availableTags.length && (
-        <Box margin="3em 0">
-          {availableTags
-            .sort((a: Tag, b: Tag) => a.name.localeCompare(b.name))
-            .map((availableTag) => (
-              <Chip
-                key={`tag${availableTag.id}`}
-                className={classes.tag}
-                label={availableTag.name}
-                onClick={() => selectTag(availableTag)}
-                onDelete={() => selectTag(availableTag)}
-                deleteIcon={<AddCircleIcon className="icon" />}
-              />
-            ))}
-        </Box>
+        <>
+          <Typography>
+            Ajoute d'autres centres d'intérêt parmi ceux disponibles :
+          </Typography>
+          <Box margin="3em 0">
+            {availableTags
+              .sort((a: Tag, b: Tag) => a.name.localeCompare(b.name))
+              .map((availableTag) => (
+                <Chip
+                  key={`tag${availableTag.id}`}
+                  className={classes.tag}
+                  label={availableTag.name}
+                  onClick={() => selectTag(availableTag)}
+                  onDelete={() => selectTag(availableTag)}
+                  deleteIcon={<AddCircleIcon className="icon" />}
+                />
+              ))}
+          </Box>
+        </>
       )}
     </>
   );
