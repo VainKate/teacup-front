@@ -14,6 +14,7 @@ import axios from 'axios';
 import { Link, useHistory } from 'react-router-dom';
 import HomeIcon from '@material-ui/icons/Home';
 import ForumIcon from '@material-ui/icons/Forum';
+import SettingsIcon from '@material-ui/icons/Settings';
 import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
 import { useContext } from 'react';
 import { AuthContext } from '../context/auth';
@@ -79,6 +80,12 @@ const DrawerContent: React.FC = () => {
       )}
       <Divider />
       <List>
+        <ListItem button key={'profile'} component={Link} to="/profile">
+          <ListItemIcon>
+            <SettingsIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Préférences'} />
+        </ListItem>
         <ListItem button key={'logout'} onClick={onLogout}>
           <ListItemIcon>
             <PowerSettingsNewIcon />
