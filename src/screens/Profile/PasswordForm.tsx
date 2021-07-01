@@ -9,8 +9,9 @@ import {
   DialogTitle,
 } from '@material-ui/core';
 import axios from 'axios';
-import React from 'react';
+import React, { useContext } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { AuthContext } from '../../context/auth';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -29,6 +30,7 @@ const PasswordForm: React.FC<{ handlePasswordDialogClose: () => void }> = ({
   handlePasswordDialogClose,
 }) => {
   const classes = useStyles();
+  const { logout } = useContext(AuthContext);
   const { handleSubmit, formState, setError, getValues, control } = useForm<{
     oldPassword: string | undefined;
     newPassword: string | undefined;
@@ -48,6 +50,8 @@ const PasswordForm: React.FC<{ handlePasswordDialogClose: () => void }> = ({
           withCredentials: true,
         },
       );
+
+      logout();
     } catch (error) {
       if (error.response.data.message === 'The current password is incorrect') {
         setError('oldPassword', {

@@ -8,9 +8,10 @@ import {
   Typography,
 } from '@material-ui/core';
 import axios from 'axios';
-import React from 'react';
+import React, { useContext } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useHistory, useParams } from 'react-router-dom';
+import { AuthContext } from '../context/auth';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -47,6 +48,7 @@ const ResetPassword: React.FC = () => {
   const classes = useStyles();
   const history = useHistory();
   const { resetKey } = useParams<{ resetKey: string }>();
+  const { user, logout } = useContext(AuthContext);
 
   const { handleSubmit, formState, getValues, control } = useForm<{
     password: string | undefined;
@@ -70,6 +72,10 @@ const ResetPassword: React.FC = () => {
           withCredentials: true,
         },
       );
+
+      if (!!user) {
+        logout();
+      }
 
       history.push('/');
     } catch (error) {
