@@ -93,71 +93,52 @@ const LoginForm: React.FC = () => {
   };
 
   const onReset = async (data: { email: string }) => {
-    const loginResponse = await axios.post<AuthenticatedUser>(
-      `${process.env.REACT_APP_API_URL}/v1/login`,
+    const resetResponse = await axios.post<AuthenticatedUser>(
+      `${process.env.REACT_APP_API_URL}/v1/forgot-pwd`,
       {
         email: data.email,
       },
       { withCredentials: true },
     );
 
-    // if (loginResponse.data) {
-    //   const userChannels = await axios.get<Array<Channel>>(
-    //     `${process.env.REACT_APP_API_URL}/v1/me/channels`,
-    //     { withCredentials: true },
-    //   );
-    //   login({
-    //     ...loginResponse.data,
-    //     channels: userChannels.data,
-    //   });
-    //   history.replace('/');
-    // }
+    if (resetResponse.data) {
+      console.log(resetResponse.data);
+    }
   };
 
   const onSubmit = handleSubmit(async (data) => {
+    if (context === 'reset') {
+      return onReset(data);
+    }
     if (context === 'signup') {
       await onSignup(data);
-    } else if (context === 'login') {
-      onLogin(data);
-    } else {
-      await onReset(data);
     }
+    onLogin(data);
   });
 
-  const formTitle = (context: 'login' | 'signup' | 'reset') => {
-    switch (context) {
-      case 'login':
-        return (
-          <>
-            Bon retour !
-            <DialogContentText>Tes infusions sont prêtes !</DialogContentText>
-          </>
-        );
-      case 'signup':
-        return (
+  return (
+    <Box paddingBottom="10px" textAlign="center">
+      <DialogTitle className={classes.formTitle}>
+        {context === 'signup' ? (
           <>
             Bienvenue !
             <DialogContentText>
               On prépare de nouvelles théières !
             </DialogContentText>
           </>
-        );
-      case 'reset':
-        return (
+        ) : context === 'login' ? (
+          <>
+            Bon retour !
+            <DialogContentText>Tes infusions sont prêtes !</DialogContentText>
+          </>
+        ) : (
           <>
             Ah mince !
             <DialogContentText>
               Donne nous l'adresse mail de ton compte, on s'occupe du reste !
             </DialogContentText>
           </>
-        );
-    }
-  };
-
-  return (
-    <Box paddingBottom="10px" textAlign="center">
-      <DialogTitle className={classes.formTitle}>
-        {formTitle(context)}
+        )}
       </DialogTitle>
       <form onSubmit={onSubmit}>
         <DialogContent>
@@ -233,7 +214,7 @@ const LoginForm: React.FC = () => {
               ? 'Se connecter'
               : context === 'signup'
               ? 'Continuer'
-              : 'Valider'}
+              : 'Envoyer'}
           </Button>
         </DialogContent>
       </form>

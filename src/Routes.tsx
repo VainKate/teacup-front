@@ -37,6 +37,9 @@ const Routes = () => {
   return (
     <>
       <Switch>
+        <Route path="/reset/:resetKey">
+          <ResetPassword />
+        </Route>
         {user ? (
           <Route>
             <Box>
@@ -51,9 +54,6 @@ const Routes = () => {
                 </Drawer>
               </Hidden>
               <Switch>
-                <Route path="/reset/:userKey">
-                  <ResetPassword />
-                </Route>
                 <PrivateRoute path="/channel/:channelId">
                   <ChannelScreen />
                 </PrivateRoute>
