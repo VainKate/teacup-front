@@ -102,7 +102,7 @@ const LoginForm: React.FC = () => {
     );
 
     if (resetResponse.data) {
-      console.log(resetResponse.data);
+      // console.log(resetResponse.data);
     }
   };
 
