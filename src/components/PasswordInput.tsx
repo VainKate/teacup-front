@@ -22,8 +22,10 @@ const PasswordInput: React.FC<{
           ? "L'ancien mot de passe est requis."
           : 'La confirmation du mot de passe est requise.',
       validate: (value: string) =>
-        name === 'confirmPassword' && !!getValues
-          ? getValues('password') === value
+        !!getValues && name !== 'oldPassword'
+          ? name === 'confirmPassword'
+            ? getValues('password') === value
+            : getValues('oldPassword') !== value
           : undefined,
     },
   });

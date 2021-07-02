@@ -3,11 +3,10 @@ import {
   Button,
   createStyles,
   DialogContent,
-  TextField,
   makeStyles,
   Theme,
 } from '@material-ui/core';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import EmailInput from '../EmailInput';
 import PasswordInput from '../PasswordInput';
 
@@ -33,7 +32,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const LoginForm: React.FC<{
   setContext: (context: 'signup' | 'reset') => void;
-  onLogin: (data: { email: string; password: string }) => void;
+  onLogin: (data: { email: string; password: string }) => Promise<void>;
 }> = ({ setContext, onLogin }) => {
   const classes = useStyles();
 
@@ -44,7 +43,7 @@ const LoginForm: React.FC<{
   const onSubmit = handleSubmit(
     async (data: { email: string; password: string }) => {
       try {
-        onLogin(data);
+        await onLogin(data);
       } catch (error) {
         if (error.response.data.message === 'Your credentials are invalid.') {
           setError('email', {});

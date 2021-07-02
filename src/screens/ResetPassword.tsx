@@ -2,15 +2,15 @@ import {
   Box,
   Button,
   createStyles,
-  TextField,
   makeStyles,
   Theme,
   Typography,
 } from '@material-ui/core';
 import axios from 'axios';
 import React, { useContext } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { useHistory, useParams } from 'react-router-dom';
+import PasswordInput from '../components/PasswordInput';
 import { AuthContext } from '../context/auth';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -50,10 +50,7 @@ const ResetPassword: React.FC = () => {
   const { resetKey } = useParams<{ resetKey: string }>();
   const { user, logout } = useContext(AuthContext);
 
-  const { handleSubmit, formState, getValues, control } = useForm<{
-    password: string | undefined;
-    confirmPassword: string | undefined;
-  }>({
+  const { handleSubmit, formState, getValues, control } = useForm({
     mode: 'onChange',
   });
 
@@ -93,52 +90,12 @@ const ResetPassword: React.FC = () => {
           Renseigne ton nouveau mot de passe
         </Typography>
         <form onSubmit={onSubmit} className={classes.form}>
-          <Controller
-            name="password"
+          <PasswordInput control={control} defaultValue="" name="password" />
+          <PasswordInput
             control={control}
             defaultValue=""
-            rules={{
-              required: 'La choix du nouveau mot de passe est requis.',
-            }}
-            render={({
-              field: { onChange, value, onBlur },
-              fieldState: { error },
-            }) => (
-              <TextField
-                label="Nouveau mot de passe"
-                margin="dense"
-                type="password"
-                value={value}
-                onBlur={onBlur}
-                onChange={onChange}
-                error={!!error}
-                helperText={error ? error.message : null}
-              />
-            )}
-          />
-          <Controller
             name="confirmPassword"
-            control={control}
-            defaultValue=""
-            rules={{
-              required: 'La confirmation du mot de passe est requis.',
-              validate: (value) => getValues('password') === value,
-            }}
-            render={({
-              field: { onChange, value, onBlur },
-              fieldState: { error },
-            }) => (
-              <TextField
-                label="Confirmer le mot de passe"
-                margin="dense"
-                type="password"
-                value={value}
-                onBlur={onBlur}
-                onChange={onChange}
-                error={!!error}
-                helperText={error ? error.message : null}
-              />
-            )}
+            getValues={getValues}
           />
           <Button
             variant="contained"

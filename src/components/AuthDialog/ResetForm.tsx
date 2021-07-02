@@ -84,9 +84,9 @@ const ResetForm: React.FC<{
         </Button>
       </DialogContent>
       <Snackbar
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         open={success}
         autoHideDuration={6000}
+        onClose={() => setSuccess(false)}
         message="Un mail de réinitialisation a été envoyé !"
       />
     </form>

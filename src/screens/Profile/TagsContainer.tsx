@@ -21,11 +21,11 @@ const useStyles = makeStyles((theme: Theme) =>
         backgroundColor: '#eca245',
         border: '2px solid #eca245',
         fontWeight: 'bold',
+        color: 'white',
       },
     },
     userTag: {
       color: 'black',
-      fontWeight: 'bold',
       backgroundColor: '#f7be2e',
     },
     icon: {
@@ -59,6 +59,7 @@ const TagsContainer: React.FC<{
         setTags(tagsResponse.data);
       }
     };
+
     getTags().catch((error) => {
       history.replace('/');
     });

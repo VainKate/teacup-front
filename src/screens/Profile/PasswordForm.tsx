@@ -3,14 +3,14 @@ import {
   Button,
   createStyles,
   DialogContent,
-  TextField,
   makeStyles,
   Theme,
   DialogTitle,
 } from '@material-ui/core';
 import axios from 'axios';
 import React, { useContext } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
+import PasswordInput from '../../components/PasswordInput';
 import { AuthContext } from '../../context/auth';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -31,20 +31,16 @@ const PasswordForm: React.FC<{ handlePasswordDialogClose: () => void }> = ({
 }) => {
   const classes = useStyles();
   const { logout } = useContext(AuthContext);
-  const { handleSubmit, formState, setError, getValues, control } = useForm<{
-    oldPassword: string | undefined;
-    newPassword: string | undefined;
-    confirmNewPassword: string | undefined;
-  }>({
-    criteriaMode: 'all',
+  const { handleSubmit, formState, setError, getValues, control } = useForm({
+    mode: 'onChange',
   });
-  const onSubmit = async (data: any) => {
+  const onSubmit = handleSubmit(async (data: any) => {
     try {
       await axios.patch(
         `${process.env.REACT_APP_API_URL}/v1/me`,
         {
           password: data.oldPassword,
-          newPassword: data.newPassword,
+          newPassword: data.password,
         },
         {
           withCredentials: true,
@@ -59,90 +55,32 @@ const PasswordForm: React.FC<{ handlePasswordDialogClose: () => void }> = ({
         });
       }
     }
-  };
+  });
 
   return (
     <Box paddingBottom="10px" textAlign="center">
       <DialogTitle className={classes.formTitle}>
         Modifie ton mot de passe
       </DialogTitle>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={onSubmit}>
         <DialogContent>
           <Box display="flex" flexDirection="column">
-            <Controller
+            <PasswordInput
               control={control}
+              defaultValue=""
               name="oldPassword"
-              rules={{ required: 'Mot de passe actuel requis.' }}
-              render={({
-                field: { onChange, onBlur, value, ref },
-                fieldState: { error },
-              }) => (
-                <>
-                  <TextField
-                    onBlur={onBlur}
-                    onChange={onChange}
-                    inputRef={ref}
-                    value={value || ''}
-                    label="Mot de passe actuel"
-                    margin="dense"
-                    id="oldPassword"
-                    type="password"
-                    error={!!error}
-                    helperText={error?.message}
-                  />
-                </>
-              )}
             />
-            <Controller
+            <PasswordInput
               control={control}
-              name="newPassword"
-              rules={{
-                required: 'Nouveau mot de passe requis.',
-              }}
-              render={({
-                field: { onChange, onBlur, value, ref },
-                fieldState: { error },
-              }) => (
-                <>
-                  <TextField
-                    onBlur={onBlur}
-                    onChange={onChange}
-                    inputRef={ref}
-                    value={value}
-                    label="Nouveau mot de passe"
-                    margin="dense"
-                    id="newPassword"
-                    type="password"
-                    error={!!error}
-                    helperText={error?.message}
-                  />
-                </>
-              )}
+              defaultValue=""
+              name="password"
+              getValues={getValues}
             />
-            <Controller
+            <PasswordInput
               control={control}
-              name="confirmNewPassword"
-              rules={{
-                required: 'Confirmation du mot de passe requis.',
-                validate: (value) => getValues('newPassword') === value,
-              }}
-              render={({
-                field: { onChange, onBlur, value, ref },
-                fieldState: { error },
-              }) => (
-                <TextField
-                  onBlur={onBlur}
-                  onChange={onChange}
-                  inputRef={ref}
-                  value={value}
-                  label="Confirmer le mot de passe"
-                  margin="dense"
-                  id="confirmNewPassword"
-                  type="password"
-                  error={!!error}
-                  helperText={error?.message}
-                />
-              )}
+              defaultValue=""
+              name="confirmPassword"
+              getValues={getValues}
             />
           </Box>
         </DialogContent>
