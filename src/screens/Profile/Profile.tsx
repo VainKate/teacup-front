@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {
       display: 'flex',
       flexDirection: 'column',
-      padding: '0 2em',
+      padding: '0 7%',
       [theme.breakpoints.up('sm')]: {
         marginLeft: `240px`,
       },
