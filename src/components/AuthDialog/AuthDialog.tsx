@@ -31,25 +31,29 @@ const AuthDialog: React.FC = () => {
   const { login } = useContext(AuthContext);
 
   const onLogin = async (data: { email: string; password: string }) => {
-    const loginResponse = await axios.post<AuthenticatedUser>(
-      `${process.env.REACT_APP_API_URL}/v1/login`,
-      {
-        email: data.email,
-        password: data.password,
-      },
-      { withCredentials: true },
-    );
-
-    if (loginResponse.data) {
-      const userChannels = await axios.get<Array<Channel>>(
-        `${process.env.REACT_APP_API_URL}/v1/me/channels`,
+    try {
+      const loginResponse = await axios.post<AuthenticatedUser>(
+        `${process.env.REACT_APP_API_URL}/v1/login`,
+        {
+          email: data.email,
+          password: data.password,
+        },
         { withCredentials: true },
       );
-      login({
-        ...loginResponse.data,
-        channels: userChannels.data,
-      });
-      history.replace('/');
+
+      if (loginResponse.data) {
+        const userChannels = await axios.get<Array<Channel>>(
+          `${process.env.REACT_APP_API_URL}/v1/me/channels`,
+          { withCredentials: true },
+        );
+        login({
+          ...loginResponse.data,
+          channels: userChannels.data,
+        });
+        history.replace('/');
+      }
+    } catch (error) {
+      throw error;
     }
   };
 

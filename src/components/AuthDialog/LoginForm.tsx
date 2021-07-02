@@ -35,7 +35,7 @@ const LoginForm: React.FC<{
 }> = ({ setContext, onLogin }) => {
   const classes = useStyles();
 
-  const { handleSubmit, formState, control } = useForm<{
+  const { handleSubmit, formState, control, setError } = useForm<{
     email: string;
     password: string;
   }>({
@@ -43,9 +43,18 @@ const LoginForm: React.FC<{
     reValidateMode: 'onChange',
   });
 
-  const onSubmit = handleSubmit((data: { email: string; password: string }) => {
-    onLogin(data);
-  });
+  const onSubmit = handleSubmit(
+    async (data: { email: string; password: string }) => {
+      try {
+        onLogin(data);
+      } catch (error) {
+        if (error.response.data.message === 'Your credentials are invalid.') {
+          setError('email', {});
+          setError('password', {});
+        }
+      }
+    },
+  );
 
   return (
     <form onSubmit={onSubmit}>
