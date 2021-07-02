@@ -174,7 +174,7 @@ const ProfileScreen: React.FC = () => {
                   control={control}
                   name="nickname"
                   rules={{
-                    required: 'Le pseudo est obligatoire.',
+                    required: 'Le pseudo est requis.',
                     validate: (value) =>
                       value && value?.replaceAll(' ', '').length !== 0,
                   }}

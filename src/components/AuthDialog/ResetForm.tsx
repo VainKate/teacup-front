@@ -3,15 +3,15 @@ import {
   Button,
   createStyles,
   DialogContent,
-  TextField,
   makeStyles,
   Theme,
   Snackbar,
 } from '@material-ui/core';
 import axios from 'axios';
 import { useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { AuthenticatedUser } from '../../types';
+import EmailInput from '../EmailInput';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -39,11 +39,8 @@ const ResetForm: React.FC<{
   const classes = useStyles();
 
   const [success, setSuccess] = useState(false);
-  const { handleSubmit, formState, control } = useForm<{
-    email: string;
-  }>({
-    mode: 'onBlur',
-    reValidateMode: 'onChange',
+  const { handleSubmit, formState, control } = useForm({
+    mode: 'onChange',
   });
 
   const onSubmit = handleSubmit(async (data: { email: string }) => {
@@ -64,30 +61,7 @@ const ResetForm: React.FC<{
     <form onSubmit={onSubmit}>
       <DialogContent>
         <Box display="flex" flexDirection="column">
-          <Controller
-            name="email"
-            control={control}
-            defaultValue=""
-            rules={{
-              required: 'Une adresse mail est obligatoire.',
-              validate: (value) => new RegExp(/\S+@\S+\.\S+/).test(value) || '',
-            }}
-            render={({
-              field: { onChange, value, onBlur },
-              fieldState: { error },
-            }) => (
-              <TextField
-                label="Adresse mail"
-                margin="dense"
-                type="email"
-                value={value}
-                onChange={onChange}
-                onBlur={onBlur}
-                error={!!error}
-                helperText={error ? error.message : null}
-              />
-            )}
-          />
+          <EmailInput control={control} name="email" defaultValue="" />
         </Box>
       </DialogContent>
       <DialogContent className={classes.buttonsContainer}>

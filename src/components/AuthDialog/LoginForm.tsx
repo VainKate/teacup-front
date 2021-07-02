@@ -8,6 +8,8 @@ import {
   Theme,
 } from '@material-ui/core';
 import { useForm, Controller } from 'react-hook-form';
+import EmailInput from '../EmailInput';
+import PasswordInput from '../PasswordInput';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -35,12 +37,8 @@ const LoginForm: React.FC<{
 }> = ({ setContext, onLogin }) => {
   const classes = useStyles();
 
-  const { handleSubmit, formState, control, setError } = useForm<{
-    email: string;
-    password: string;
-  }>({
-    mode: 'onBlur',
-    reValidateMode: 'onChange',
+  const { handleSubmit, formState, control, setError } = useForm({
+    mode: 'onChange',
   });
 
   const onSubmit = handleSubmit(
@@ -60,53 +58,8 @@ const LoginForm: React.FC<{
     <form onSubmit={onSubmit}>
       <DialogContent>
         <Box display="flex" flexDirection="column">
-          <Controller
-            name="email"
-            control={control}
-            defaultValue=""
-            rules={{
-              required: 'Une adresse mail est obligatoire.',
-              validate: (value) => new RegExp(/\S+@\S+\.\S+/).test(value) || '',
-            }}
-            render={({
-              field: { onChange, value, onBlur },
-              fieldState: { error },
-            }) => (
-              <TextField
-                label="Adresse mail"
-                margin="dense"
-                type="email"
-                value={value}
-                onChange={onChange}
-                onBlur={onBlur}
-                error={!!error}
-                helperText={error ? error.message : null}
-              />
-            )}
-          />
-          <Controller
-            name="password"
-            control={control}
-            defaultValue=""
-            rules={{
-              required: 'La confirmation du mot de passe est obligatoire.',
-            }}
-            render={({
-              field: { onChange, value, onBlur },
-              fieldState: { error },
-            }) => (
-              <TextField
-                label="Mot de passe"
-                margin="dense"
-                type="password"
-                value={value}
-                onBlur={onBlur}
-                onChange={onChange}
-                error={!!error}
-                helperText={error ? error.message : null}
-              />
-            )}
-          />
+          <EmailInput control={control} name="email" defaultValue="" />
+          <PasswordInput control={control} name="password" defaultValue="" />
         </Box>
       </DialogContent>
       <DialogContent className={classes.buttonsContainer}>

@@ -3,13 +3,15 @@ import {
   Button,
   createStyles,
   DialogContent,
-  TextField,
   makeStyles,
   Theme,
 } from '@material-ui/core';
 import axios from 'axios';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { AuthenticatedUser } from '../../types';
+import EmailInput from '../EmailInput';
+import NicknameInput from '../NicknameInput';
+import PasswordInput from '../PasswordInput';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -37,14 +39,8 @@ const SignupForm: React.FC<{
 }> = ({ setContext, onLogin }) => {
   const classes = useStyles();
 
-  const { handleSubmit, formState, control, getValues, setError } = useForm<{
-    email: string;
-    nickname: string;
-    password: string;
-    confirmPassword: string;
-  }>({
-    mode: 'onBlur',
-    reValidateMode: 'onChange',
+  const { handleSubmit, formState, control, getValues, setError } = useForm({
+    mode: 'onChange',
   });
 
   const onSubmit = handleSubmit(
@@ -79,100 +75,19 @@ const SignupForm: React.FC<{
     <form onSubmit={onSubmit}>
       <DialogContent>
         <Box display="flex" flexDirection="column">
-          <Controller
-            name="nickname"
+          <NicknameInput control={control} name="nickname" defaultValue="" />
+          <EmailInput control={control} name="email" defaultValue="" />
+          <PasswordInput
             control={control}
-            defaultValue=""
-            rules={{
-              required: "Le choix d'un pseudo est obligatoire.",
-              validate: (value) => value.replaceAll(' ', '').length !== 0,
-            }}
-            render={({
-              field: { onChange, value, onBlur },
-              fieldState: { error },
-            }) => (
-              <TextField
-                label="Pseudo"
-                margin="dense"
-                type="text"
-                value={value}
-                onChange={onChange}
-                onBlur={onBlur}
-                error={!!error}
-                helperText={error ? error.message : null}
-              />
-            )}
-          />
-          <Controller
-            name="email"
-            control={control}
-            defaultValue=""
-            rules={{
-              required: 'Une adresse mail est obligatoire.',
-              validate: (value) => new RegExp(/\S+@\S+\.\S+/).test(value) || '',
-            }}
-            render={({
-              field: { onChange, value, onBlur },
-              fieldState: { error },
-            }) => (
-              <TextField
-                label="Adresse mail"
-                margin="dense"
-                type="email"
-                value={value}
-                onChange={onChange}
-                onBlur={onBlur}
-                error={!!error}
-                helperText={error ? error.message : null}
-              />
-            )}
-          />
-          <Controller
             name="password"
-            control={control}
             defaultValue=""
-            rules={{
-              required: 'La choix du mot de passe est obligatoire.',
-            }}
-            render={({
-              field: { onChange, value, onBlur },
-              fieldState: { error },
-            }) => (
-              <TextField
-                label="Mot de passe"
-                margin="dense"
-                type="password"
-                value={value}
-                onBlur={onBlur}
-                onChange={onChange}
-                error={!!error}
-                helperText={error ? error.message : null}
-              />
-            )}
+            getValues={getValues}
           />
-          <Controller
-            name="confirmPassword"
+          <PasswordInput
             control={control}
+            name="confirmPassword"
             defaultValue=""
-            rules={{
-              required: 'La confirmation du mot de passe est obligatoire.',
-              validate: (value) => getValues('password') === value,
-            }}
-            render={({
-              field: { onChange, value, onBlur },
-              fieldState: { error },
-            }) => (
-              <TextField
-                label="Confirmation du mot de passe"
-                margin="dense"
-                type="password"
-                value={value}
-                onBlur={onBlur}
-                onChange={onChange}
-                error={!!error}
-                helperText={error ? error.message : null}
-              />
-            )}
+            getValues={getValues}
           />
         </Box>
       </DialogContent>

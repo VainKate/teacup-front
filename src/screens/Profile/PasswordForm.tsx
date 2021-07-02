@@ -72,7 +72,7 @@ const PasswordForm: React.FC<{ handlePasswordDialogClose: () => void }> = ({
             <Controller
               control={control}
               name="oldPassword"
-              rules={{ required: 'Mot de passe actuel obligatoire.' }}
+              rules={{ required: 'Mot de passe actuel requis.' }}
               render={({
                 field: { onChange, onBlur, value, ref },
                 fieldState: { error },
@@ -97,7 +97,7 @@ const PasswordForm: React.FC<{ handlePasswordDialogClose: () => void }> = ({
               control={control}
               name="newPassword"
               rules={{
-                required: 'Nouveau mot de passe obligatoire.',
+                required: 'Nouveau mot de passe requis.',
               }}
               render={({
                 field: { onChange, onBlur, value, ref },
@@ -123,7 +123,7 @@ const PasswordForm: React.FC<{ handlePasswordDialogClose: () => void }> = ({
               control={control}
               name="confirmNewPassword"
               rules={{
-                required: 'Confirmation du mot de passe obligatoire.',
+                required: 'Confirmation du mot de passe requis.',
                 validate: (value) => getValues('newPassword') === value,
               }}
               render={({
