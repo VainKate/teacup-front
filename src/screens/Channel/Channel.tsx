@@ -157,7 +157,7 @@ const ChannelScreen: React.FC = () => {
         .on('connect', () => {
           socket.current!.emit('auth', {
             channel: { id: parseInt(channelId) },
-            user: { id: user?.id, nickname: user?.nickname },
+            user: { id: user?.id },
           } as SocketAuthPacket);
         })
         .on('confirm', () => {

@@ -8,7 +8,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import { useState } from 'react';
-import LoginForm from '../components/LoginForm';
+import AuthDialog from '../components/AuthDialog/AuthDialog';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -64,7 +64,7 @@ const LandingScreen: React.FC = () => {
             open={isAuthDialogOpen}
             onClose={handleAuthDialogClose}
           >
-            <LoginForm />
+            <AuthDialog />
           </Dialog>
         </div>
       </section>
