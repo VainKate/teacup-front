@@ -9,7 +9,7 @@ import {
 } from '@material-ui/core';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axios, { CancelTokenSource } from 'axios';
 
 import { Tag } from '../../types';
 import { useHistory } from 'react-router-dom';
@@ -48,12 +48,16 @@ const TagsContainer: React.FC<{
   const [availableTags, setAvailableTags] = useState<Array<Tag>>([]);
 
   useEffect(() => {
-    const getTags = async () => {
+    const CancelToken = axios.CancelToken;
+    const source = CancelToken.source();
+
+    const getTags = async (source: CancelTokenSource) => {
       try {
         const tagsResponse = await axios.get<Array<Tag>>(
           `${process.env.REACT_APP_API_URL}/v1/tags`,
           {
             withCredentials: true,
+            cancelToken: source.token,
           },
         );
 
@@ -63,11 +67,18 @@ const TagsContainer: React.FC<{
 
         setLoading(false);
       } catch (error) {
-        history.replace('/');
+        if (axios.isCancel(error)) {
+          console.log('Request canceled', error.message);
+        } else {
+          history.replace('/');
+        }
       }
     };
 
-    getTags();
+    getTags(source);
+
+    return () => source.cancel();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
