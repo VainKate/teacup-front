@@ -67,9 +67,7 @@ const TagsContainer: React.FC<{
 
         setLoading(false);
       } catch (error) {
-        if (axios.isCancel(error)) {
-          console.log('Request canceled', error.message);
-        } else {
+        if (!axios.isCancel(error)) {
           history.replace('/');
         }
       }
