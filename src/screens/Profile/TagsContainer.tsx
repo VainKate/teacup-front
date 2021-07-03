@@ -5,6 +5,7 @@ import {
   Theme,
   Chip,
   Typography,
+  CircularProgress,
 } from '@material-ui/core';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import React, { useEffect, useState } from 'react';
@@ -40,7 +41,7 @@ const TagsContainer: React.FC<{
   unselectTag: (tag: Tag) => void;
 }> = ({ userTags, selectTag, unselectTag }) => {
   const classes = useStyles();
-
+  const [loading, setLoading] = useState(true);
   const history = useHistory();
 
   const [tags, setTags] = useState<Array<Tag>>([]);
@@ -48,22 +49,27 @@ const TagsContainer: React.FC<{
 
   useEffect(() => {
     const getTags = async () => {
-      const tagsResponse = await axios.get<Array<Tag>>(
-        `${process.env.REACT_APP_API_URL}/v1/tags`,
-        {
-          withCredentials: true,
-        },
-      );
+      try {
+        const tagsResponse = await axios.get<Array<Tag>>(
+          `${process.env.REACT_APP_API_URL}/v1/tags`,
+          {
+            withCredentials: true,
+          },
+        );
 
-      if (tagsResponse.data) {
-        setTags(tagsResponse.data);
+        if (tagsResponse.data) {
+          setTags([...tagsResponse.data]);
+        }
+
+        setLoading(false);
+      } catch (error) {
+        history.replace('/');
       }
     };
 
-    getTags().catch((error) => {
-      history.replace('/');
-    });
-  }, [history]);
+    getTags();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const availableTags = tags.filter(
@@ -89,11 +95,14 @@ const TagsContainer: React.FC<{
             ))}
         </Box>
       )}
-      {!!availableTags.length && (
-        <>
-          <Typography>
-            Ajoute d'autres centres d'intérêt parmi ceux disponibles :
-          </Typography>
+
+      <Typography>
+        Ajoute d'autres centres d'intérêt parmi ceux disponibles :
+      </Typography>
+      {loading ? (
+        <CircularProgress />
+      ) : (
+        !!availableTags.length && (
           <Box margin="3em 0">
             {availableTags
               .sort((a: Tag, b: Tag) => a.name.localeCompare(b.name))
@@ -108,7 +117,7 @@ const TagsContainer: React.FC<{
                 />
               ))}
           </Box>
-        </>
+        )
       )}
     </>
   );
