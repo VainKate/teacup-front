@@ -1,7 +1,7 @@
 import { TextField } from '@material-ui/core';
 import { useController, Control, FieldValues } from 'react-hook-form';
 
-const InputEmail: React.FC<{
+const EmailInput: React.FC<{
   control: Control<FieldValues>;
   name: 'email';
   defaultValue: string;
@@ -31,4 +31,4 @@ const InputEmail: React.FC<{
     />
   );
 };
-export default InputEmail;
+export default EmailInput;

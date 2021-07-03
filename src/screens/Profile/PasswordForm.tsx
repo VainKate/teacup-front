@@ -34,28 +34,32 @@ const PasswordForm: React.FC<{ handlePasswordDialogClose: () => void }> = ({
   const { handleSubmit, formState, setError, getValues, control } = useForm({
     mode: 'onChange',
   });
-  const onSubmit = handleSubmit(async (data: any) => {
-    try {
-      await axios.patch(
-        `${process.env.REACT_APP_API_URL}/v1/me`,
-        {
-          password: data.oldPassword,
-          newPassword: data.password,
-        },
-        {
-          withCredentials: true,
-        },
-      );
+  const onSubmit = handleSubmit(
+    async (data: { oldPassword: string; password: string }) => {
+      try {
+        await axios.patch(
+          `${process.env.REACT_APP_API_URL}/v1/me`,
+          {
+            password: data.oldPassword,
+            newPassword: data.password,
+          },
+          {
+            withCredentials: true,
+          },
+        );
 
-      logout();
-    } catch (error) {
-      if (error.response.data.message === 'The current password is incorrect') {
-        setError('oldPassword', {
-          message: 'Mot de passe incorrect.',
-        });
+        logout();
+      } catch (error) {
+        if (
+          error.response.data.message === 'The current password is incorrect'
+        ) {
+          setError('oldPassword', {
+            message: 'Mot de passe incorrect.',
+          });
+        }
       }
-    }
-  });
+    },
+  );
 
   return (
     <Box paddingBottom="10px" textAlign="center">

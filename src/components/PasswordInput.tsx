@@ -5,7 +5,7 @@ const PasswordInput: React.FC<{
   control: Control<FieldValues>;
   name: 'oldPassword' | 'password' | 'confirmPassword';
   defaultValue: string;
-  getValues?: (field: string) => string | undefined;
+  getValues?: (field: string) => string;
 }> = ({ control, name, defaultValue, getValues }) => {
   const {
     field: { ref, ...inputProps },

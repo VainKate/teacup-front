@@ -1,7 +1,7 @@
 import { TextField } from '@material-ui/core';
 import { useController, Control, FieldValues } from 'react-hook-form';
 
-const InputNickname: React.FC<{
+const NicknameInput: React.FC<{
   control: Control<FieldValues>;
   name: 'nickname';
   defaultValue: string;
@@ -31,4 +31,4 @@ const InputNickname: React.FC<{
     />
   );
 };
-export default InputNickname;
+export default NicknameInput;
