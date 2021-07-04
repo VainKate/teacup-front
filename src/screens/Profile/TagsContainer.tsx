@@ -8,11 +8,11 @@ import {
   CircularProgress,
 } from '@material-ui/core';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import axios, { CancelTokenSource } from 'axios';
 
 import { Tag } from '../../types';
-import { useHistory } from 'react-router-dom';
+import { AuthContext } from '../../context/auth';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -42,7 +42,7 @@ const TagsContainer: React.FC<{
 }> = ({ userTags, selectTag, unselectTag }) => {
   const classes = useStyles();
   const [loading, setLoading] = useState(true);
-  const history = useHistory();
+  const { logout } = useContext(AuthContext);
 
   const [tags, setTags] = useState<Array<Tag>>([]);
   const [availableTags, setAvailableTags] = useState<Array<Tag>>([]);
@@ -68,7 +68,7 @@ const TagsContainer: React.FC<{
         setLoading(false);
       } catch (error) {
         if (!axios.isCancel(error)) {
-          history.replace('/');
+          logout();
         }
       }
     };
