@@ -7,6 +7,30 @@ const PasswordInput: React.FC<{
   defaultValue: string;
   getValues?: (field: string) => string;
 }> = ({ control, name, defaultValue, getValues }) => {
+  const label = {
+    oldPassword: 'Ancien mot de passe',
+    password: 'Mot de passe',
+    confirmPassword: 'Confirmer le mot de passe',
+  };
+  const rules = {
+    required: {
+      oldPassword: "L'ancien mot de passe est requis.",
+      password: 'Le mot de passe est requis.',
+      confirmPassword: 'La confirmation du mot de passe est requise.',
+    },
+    validate: {
+      oldPassword: undefined,
+      password: (value: string) =>
+        getValues!('oldPassword') !== value
+          ? true
+          : "L'ancien et le nouveau mot de passe ne peuvent pas être identiques.",
+      confirmPassword: (value: string) =>
+        getValues!('password') === value
+          ? true
+          : 'Le mot de passe et sa confirmation doivent être identiques.',
+    },
+  };
+
   const {
     field: { ref, ...inputProps },
     fieldState: { error },
@@ -15,30 +39,14 @@ const PasswordInput: React.FC<{
     name,
     defaultValue,
     rules: {
-      required:
-        name === 'password'
-          ? 'Le mot de passe est requis.'
-          : name === 'oldPassword'
-          ? "L'ancien mot de passe est requis."
-          : 'La confirmation du mot de passe est requise.',
-      validate: (value: string) =>
-        !!getValues && name !== 'oldPassword'
-          ? name === 'confirmPassword'
-            ? getValues('password') === value
-            : getValues('oldPassword') !== value
-          : undefined,
+      required: rules.required[name],
+      validate: getValues ? rules.validate[name] : undefined,
     },
   });
 
   return (
     <TextField
-      label={
-        name === 'password'
-          ? 'Mot de passe'
-          : name === 'oldPassword'
-          ? 'Ancien mot de passe'
-          : 'Confirmer le mot de passe'
-      }
+      label={label[name]}
       margin="dense"
       type="password"
       {...inputProps}

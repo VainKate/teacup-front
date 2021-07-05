@@ -23,7 +23,7 @@ const authReducer = (state: any, action: { type: string; payload: any }) => {
     case 'LOGIN':
       return { ...state, user: action.payload };
     case 'LOGOUT':
-      return { ...state, user: null, joinedChannels: [] };
+      return { ...state, user: null };
     default:
       return state;
   }
@@ -79,7 +79,8 @@ const AuthProvider: React.FC = ({ children }) => {
 
   const value = useMemo(() => {
     return { user: state.user, login, logout };
-  }, [state.user, login, logout]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.user, state.user?.channels?.length, login, logout]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
