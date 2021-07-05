@@ -3,14 +3,15 @@ import {
   Button,
   createStyles,
   DialogContent,
-  TextField,
   makeStyles,
   Theme,
   DialogTitle,
 } from '@material-ui/core';
 import axios from 'axios';
-import React from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import React, { useContext } from 'react';
+import { useForm } from 'react-hook-form';
+import PasswordInput from '../../components/PasswordInput';
+import { AuthContext } from '../../context/auth';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -29,116 +30,61 @@ const PasswordForm: React.FC<{ handlePasswordDialogClose: () => void }> = ({
   handlePasswordDialogClose,
 }) => {
   const classes = useStyles();
-  const { handleSubmit, formState, setError, getValues, control } = useForm<{
-    oldPassword: string | undefined;
-    newPassword: string | undefined;
-    confirmNewPassword: string | undefined;
-  }>({
-    criteriaMode: 'all',
+  const { logout } = useContext(AuthContext);
+  const { handleSubmit, formState, setError, getValues, control } = useForm({
+    mode: 'onChange',
   });
-  const onSubmit = async (data: any) => {
-    try {
-      await axios.patch(
-        `${process.env.REACT_APP_API_URL}/v1/me`,
-        {
-          password: data.oldPassword,
-          newPassword: data.newPassword,
-        },
-        {
-          withCredentials: true,
-        },
-      );
-    } catch (error) {
-      if (error.response.data.message === 'The current password is incorrect') {
-        setError('oldPassword', {
-          message: 'Mot de passe incorrect.',
-        });
+  const onSubmit = handleSubmit(
+    async (data: { oldPassword: string; password: string }) => {
+      try {
+        await axios.patch(
+          `${process.env.REACT_APP_API_URL}/v1/me`,
+          {
+            password: data.oldPassword,
+            newPassword: data.password,
+          },
+          {
+            withCredentials: true,
+          },
+        );
+
+        logout();
+      } catch (error) {
+        if (
+          error.response.data.message === 'The current password is incorrect'
+        ) {
+          setError('oldPassword', {
+            message: 'Mot de passe incorrect.',
+          });
+        }
       }
-    }
-  };
+    },
+  );
 
   return (
     <Box paddingBottom="10px" textAlign="center">
       <DialogTitle className={classes.formTitle}>
         Modifie ton mot de passe
       </DialogTitle>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={onSubmit}>
         <DialogContent>
           <Box display="flex" flexDirection="column">
-            <Controller
+            <PasswordInput
               control={control}
+              defaultValue=""
               name="oldPassword"
-              rules={{ required: 'Mot de passe actuel obligatoire.' }}
-              render={({
-                field: { onChange, onBlur, value, ref },
-                fieldState: { error },
-              }) => (
-                <>
-                  <TextField
-                    onBlur={onBlur}
-                    onChange={onChange}
-                    inputRef={ref}
-                    value={value || ''}
-                    label="Mot de passe actuel"
-                    margin="dense"
-                    id="oldPassword"
-                    type="password"
-                    error={!!error}
-                    helperText={error?.message}
-                  />
-                </>
-              )}
             />
-            <Controller
+            <PasswordInput
               control={control}
-              name="newPassword"
-              rules={{
-                required: 'Nouveau mot de passe obligatoire.',
-              }}
-              render={({
-                field: { onChange, onBlur, value, ref },
-                fieldState: { error },
-              }) => (
-                <>
-                  <TextField
-                    onBlur={onBlur}
-                    onChange={onChange}
-                    inputRef={ref}
-                    value={value}
-                    label="Nouveau mot de passe"
-                    margin="dense"
-                    id="newPassword"
-                    type="password"
-                    error={!!error}
-                    helperText={error?.message}
-                  />
-                </>
-              )}
+              defaultValue=""
+              name="password"
+              getValues={getValues}
             />
-            <Controller
+            <PasswordInput
               control={control}
-              name="confirmNewPassword"
-              rules={{
-                required: 'Confirmation du mot de passe obligatoire.',
-                validate: (value) => getValues('newPassword') === value,
-              }}
-              render={({
-                field: { onChange, onBlur, value, ref },
-                fieldState: { error },
-              }) => (
-                <TextField
-                  onBlur={onBlur}
-                  onChange={onChange}
-                  inputRef={ref}
-                  value={value}
-                  label="Confirmer le mot de passe"
-                  margin="dense"
-                  id="confirmNewPassword"
-                  type="password"
-                  error={!!error}
-                  helperText={error?.message}
-                />
-              )}
+              defaultValue=""
+              name="confirmPassword"
+              getValues={getValues}
             />
           </Box>
         </DialogContent>

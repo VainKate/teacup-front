@@ -36,14 +36,10 @@ const DeleteDialog: React.FC<{ handleDeleteDialogClose: () => void }> = ({
   const { logout } = useContext(AuthContext);
 
   const deleteAccount = async () => {
-    try {
-      await axios.delete(`${process.env.REACT_APP_API_URL}/v1/me`, {
-        withCredentials: true,
-      });
-      logout();
-    } catch (error) {
-      //   console.log(error.response.data);
-    }
+    await axios.delete(`${process.env.REACT_APP_API_URL}/v1/me`, {
+      withCredentials: true,
+    });
+    logout();
   };
 
   return (

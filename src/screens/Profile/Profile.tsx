@@ -4,7 +4,7 @@ import {
   createStyles,
   Dialog,
   makeStyles,
-  TextField,
+  Snackbar,
   Theme,
   Typography,
 } from '@material-ui/core';
@@ -12,7 +12,9 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import axios from 'axios';
 import { useContext, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import EmailInput from '../../components/EmailInput';
 import NavBar from '../../components/NavBar';
+import NicknameInput from '../../components/NicknameInput';
 import { AuthContext } from '../../context/auth';
 import { Tag } from '../../types';
 import DeleteDialog from './DeleteDialog';
@@ -53,10 +55,20 @@ const useStyles = makeStyles((theme: Theme) =>
       justifyContent: 'space-around',
       padding: '3em 0',
       width: '-webkit-fill-available',
+      flexDirection: 'column-reverse',
+
+      [theme.breakpoints.up('sm')]: {
+        flexDirection: 'row',
+      },
     },
     deleteButton: {
       backgroundColor: '#bf4646',
       color: 'white',
+      marginTop: '1em',
+
+      [theme.breakpoints.up('sm')]: {
+        marginTop: '0',
+      },
     },
   }),
 );
@@ -70,19 +82,13 @@ export type FormData = {
 const ProfileScreen: React.FC = () => {
   const classes = useStyles();
   const { user, login } = useContext(AuthContext);
+  const [success, setSuccess] = useState(false);
 
   // Form
   const { handleSubmit, formState, control, getValues, setValue, setError } =
-    useForm<FormData>({
-      criteriaMode: 'all',
-      defaultValues: {
-        nickname: user!.nickname,
-        email: user!.email,
-        tags: user!.tags,
-      },
-    });
+    useForm();
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = handleSubmit(async (data: FormData) => {
     try {
       const meResponse = await axios.put(
         `${process.env.REACT_APP_API_URL}/v1/me`,
@@ -102,6 +108,8 @@ const ProfileScreen: React.FC = () => {
           channels: user!.channels,
         });
       }
+
+      setSuccess(true);
     } catch (error) {
       if (
         error.response.data.message.match(
@@ -113,7 +121,7 @@ const ProfileScreen: React.FC = () => {
         });
       }
     }
-  };
+  });
 
   const selectTag = (tag: Tag) => {
     setValue('tags', [...getValues('tags'), tag]);
@@ -121,7 +129,7 @@ const ProfileScreen: React.FC = () => {
 
   const unselectTag = (tag: Tag) => {
     setValue('tags', [
-      ...getValues('tags').filter((userTag) => userTag.id !== tag.id),
+      ...getValues('tags').filter((userTag: Tag) => userTag.id !== tag.id),
     ]);
   };
 
@@ -139,61 +147,20 @@ const ProfileScreen: React.FC = () => {
     <>
       <NavBar />
       <Box className={classes.root}>
-        <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
+        <form className={classes.form} onSubmit={onSubmit}>
           <Box>
             <Box className={classes.personalData}>
               <Typography variant="h4">Tes infos personnelles</Typography>
               <Box display="flex" flexDirection="column" margin="3em 0">
-                <Controller
+                <EmailInput
                   control={control}
                   name="email"
-                  rules={{
-                    required: 'Cette adresse email est invalide.',
-                    validate: (value) =>
-                      value && value?.replaceAll(' ', '').length !== 0,
-                  }}
-                  render={({
-                    field: { onChange, onBlur, value, ref },
-                    fieldState: { error },
-                  }) => (
-                    <TextField
-                      onBlur={onBlur}
-                      onChange={onChange}
-                      inputRef={ref}
-                      value={value}
-                      label="Adresse mail"
-                      margin="dense"
-                      id="email"
-                      type="email"
-                      error={!!error}
-                      helperText={error?.message}
-                    />
-                  )}
+                  defaultValue={user!.email}
                 />
-                <Controller
+                <NicknameInput
                   control={control}
                   name="nickname"
-                  rules={{
-                    required: 'Le pseudo est obligatoire.',
-                    validate: (value) =>
-                      value && value?.replaceAll(' ', '').length !== 0,
-                  }}
-                  render={({
-                    field: { onChange, onBlur, value, ref },
-                    fieldState: { error },
-                  }) => (
-                    <TextField
-                      onBlur={onBlur}
-                      onChange={onChange}
-                      inputRef={ref}
-                      value={value}
-                      label="Pseudo"
-                      margin="dense"
-                      id="nickname"
-                      error={!!error}
-                      helperText={error?.message}
-                    />
-                  )}
+                  defaultValue={user!.nickname}
                 />
                 <Button
                   size="large"
@@ -210,6 +177,7 @@ const ProfileScreen: React.FC = () => {
               <Controller
                 control={control}
                 name="tags"
+                defaultValue={user!.tags}
                 render={() => (
                   <TagsContainer
                     userTags={getValues('tags')}
@@ -263,6 +231,12 @@ const ProfileScreen: React.FC = () => {
           <DeleteDialog handleDeleteDialogClose={handleDeleteDialogClose} />
         </Dialog>
       )}
+      <Snackbar
+        open={success}
+        autoHideDuration={6000}
+        onClose={() => setSuccess(false)}
+        message="Tes préférences ont été actualisées avec succés !"
+      />
     </>
   );
 };
