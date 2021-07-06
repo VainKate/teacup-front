@@ -15,10 +15,12 @@ const useStyles = makeStyles((theme: Theme) =>
     buttonsContainer: {
       display: 'flex',
       justifyContent: 'space-around',
-      padding: '1.5em 0 1em',
+      flexDirection: 'column',
+      padding: '1.5em 1em 1em',
       flexWrap: 'wrap',
       [theme.breakpoints.up('sm')]: {
         flexWrap: 'no-wrap',
+        flexDirection: 'row',
       },
     },
     button: {
