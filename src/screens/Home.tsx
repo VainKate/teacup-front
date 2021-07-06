@@ -28,8 +28,28 @@ const HomeScreen: React.FC = () => {
     useState(true);
   const [userRecommendedChannels, setUserRecommendedChannels] =
     useState<Array<Channel> | null>(null);
+  const [loadingJoinedChannels, setLoadingJoinedChannels] = useState(true);
+  const [userJoinedChannels, setUserJoinedChannels] =
+    useState<Array<Channel> | null>(null);
 
-  const { user } = useContext(AuthContext);
+  const { user, login } = useContext(AuthContext);
+
+  const getJoinedChannels = async () => {
+    const channelsResponse = await axios.get(
+      `${process.env.REACT_APP_API_URL}/v1/me/channels`,
+      {
+        withCredentials: true,
+      },
+    );
+
+    if (channelsResponse.data) {
+      setUserJoinedChannels(channelsResponse.data);
+      setLoadingJoinedChannels(false);
+
+      user!.channels = [...channelsResponse.data];
+      login(user!);
+    }
+  };
 
   const getRecommendedChannels = async () => {
     const channelsResponse = await axios.get(
@@ -47,6 +67,7 @@ const HomeScreen: React.FC = () => {
 
   useEffect(() => {
     getRecommendedChannels();
+    getJoinedChannels();
   }, []);
 
   return (
@@ -55,7 +76,10 @@ const HomeScreen: React.FC = () => {
       <Box className={classes.root}>
         <Typography variant="h4">Tes Salons</Typography>
         {user && user.channels && user.channels.length > 0 ? (
-          <ChannelList loading={!user} channels={user.channels} />
+          <ChannelList
+            loading={loadingJoinedChannels}
+            channels={userJoinedChannels}
+          />
         ) : (
           <Box paddingY="10px">
             <Typography>
