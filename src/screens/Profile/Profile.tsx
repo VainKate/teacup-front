@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'flex',
       justifyContent: 'space-around',
       padding: '3em 0',
-      width: '-webkit-fill-available',
+      width: '100%',
       flexDirection: 'column-reverse',
 
       [theme.breakpoints.up('sm')]: {
