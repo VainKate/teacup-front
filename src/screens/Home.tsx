@@ -68,6 +68,7 @@ const HomeScreen: React.FC = () => {
   useEffect(() => {
     getRecommendedChannels();
     getJoinedChannels();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
