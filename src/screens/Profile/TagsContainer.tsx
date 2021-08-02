@@ -8,11 +8,11 @@ import {
   CircularProgress,
 } from '@material-ui/core';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useContext, useEffect, useState } from 'react';
+import axios, { CancelTokenSource } from 'axios';
 
 import { Tag } from '../../types';
-import { useHistory } from 'react-router-dom';
+import { AuthContext } from '../../context/auth';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -42,18 +42,22 @@ const TagsContainer: React.FC<{
 }> = ({ userTags, selectTag, unselectTag }) => {
   const classes = useStyles();
   const [loading, setLoading] = useState(true);
-  const history = useHistory();
+  const { logout } = useContext(AuthContext);
 
   const [tags, setTags] = useState<Array<Tag>>([]);
   const [availableTags, setAvailableTags] = useState<Array<Tag>>([]);
 
   useEffect(() => {
-    const getTags = async () => {
+    const CancelToken = axios.CancelToken;
+    const source = CancelToken.source();
+
+    const getTags = async (source: CancelTokenSource) => {
       try {
         const tagsResponse = await axios.get<Array<Tag>>(
           `${process.env.REACT_APP_API_URL}/v1/tags`,
           {
             withCredentials: true,
+            cancelToken: source.token,
           },
         );
 
@@ -63,11 +67,16 @@ const TagsContainer: React.FC<{
 
         setLoading(false);
       } catch (error) {
-        history.replace('/');
+        if (!axios.isCancel(error)) {
+          logout();
+        }
       }
     };
 
-    getTags();
+    getTags(source);
+
+    return () => source.cancel();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
